@@ -1,0 +1,222 @@
+{
+ "the-kau": {
+  "pagina": 1,
+  "caja": [
+   55,
+   270,
+   307,
+   192
+  ],
+  "lado": 307
+ },
+ "green-spicy": {
+  "pagina": 1,
+  "caja": [
+   55,
+   494,
+   307,
+   210
+  ],
+  "lado": 307
+ },
+ "samurai": {
+  "pagina": 1,
+  "caja": [
+   55,
+   716,
+   307,
+   193
+  ],
+  "lado": 307
+ },
+ "postres": {
+  "pagina": 1,
+  "caja": [
+   70,
+   962,
+   155,
+   397
+  ],
+  "lado": 320
+ },
+ "golden-bacon": {
+  "pagina": 2,
+  "caja": [
+   55,
+   339,
+   323,
+   171
+  ],
+  "lado": 320
+ },
+ "from-texas": {
+  "pagina": 2,
+  "caja": [
+   55,
+   540,
+   323,
+   154
+  ],
+  "lado": 320
+ },
+ "cowboy-samurai": {
+  "pagina": 2,
+  "caja": [
+   55,
+   740,
+   323,
+   172
+  ],
+  "lado": 320
+ },
+ "tokyo-chicken": {
+  "pagina": 2,
+  "caja": [
+   55,
+   946,
+   323,
+   191
+  ],
+  "lado": 320
+ },
+ "chicken-pops": {
+  "pagina": 2,
+  "caja": [
+   121,
+   1252,
+   251,
+   140
+  ],
+  "lado": 251
+ },
+ "mini-kid": {
+  "pagina": 2,
+  "caja": [
+   114,
+   1476,
+   258,
+   138
+  ],
+  "lado": 258
+ },
+ "korean-red": {
+  "pagina": 3,
+  "caja": [
+   55,
+   423,
+   343,
+   263
+  ],
+  "lado": 320
+ },
+ "soul-chili": {
+  "pagina": 3,
+  "caja": [
+   55,
+   867,
+   343,
+   268
+  ],
+  "lado": 320
+ },
+ "terra-vega": {
+  "pagina": 3,
+  "caja": [
+   55,
+   1266,
+   343,
+   284
+  ],
+  "lado": 320
+ },
+ "dilenus": {
+  "pagina": 4,
+  "caja": [
+   55,
+   398,
+   343,
+   253
+  ],
+  "lado": 320
+ },
+ "dilurio": {
+  "pagina": 4,
+  "caja": [
+   55,
+   702,
+   343,
+   259
+  ],
+  "lado": 320
+ },
+ "green-chili": {
+  "pagina": 4,
+  "caja": [
+   55,
+   1020,
+   343,
+   242
+  ],
+  "lado": 320
+ },
+ "mozzaboom": {
+  "pagina": 4,
+  "caja": [
+   55,
+   1332,
+   343,
+   254
+  ],
+  "lado": 320
+ },
+ "atomic": {
+  "pagina": 5,
+  "caja": [
+   55,
+   352,
+   335,
+   209
+  ],
+  "lado": 320
+ },
+ "apollo-11": {
+  "pagina": 5,
+  "caja": [
+   55,
+   589,
+   335,
+   218
+  ],
+  "lado": 320
+ },
+ "central-nasa": {
+  "pagina": 5,
+  "caja": [
+   55,
+   819,
+   335,
+   196
+  ],
+  "lado": 320
+ },
+ "dileta": {
+  "pagina": 5,
+  "caja": [
+   55,
+   1049,
+   335,
+   173
+  ],
+  "lado": 320
+ },
+ "big-bang": {
+  "pagina": 5,
+  "caja": [
+   55,
+   1258,
+   335,
+   165
+  ],
+  "lado": 320
+ }
+}
