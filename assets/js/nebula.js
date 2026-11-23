@@ -1,5 +1,5 @@
 /* Nebula · la noche verde de Dile’s
-   Fondo de nebulosa (WebGL), logo líquido con gotas, cuenta atrás, cintas que aceleran con el scroll, vinilo y tracklist,
+   Fondo de nebulosa (WebGL), el logo real con reflejo y gotas, cuenta atrás, cintas que aceleran con el scroll, vinilo y tracklist,
    pases colgantes con física de péndulo, platillo que abduce a Dilu y el viaje de vuelta a Dile’s.
    Sin dependencias. Sin JS todo se lee; con «reducir movimiento» no se mueve nada. */
 (() => {
@@ -65,37 +65,6 @@
   };
   pintarCuenta();
   setInterval(pintarCuenta, 1000);
-
-  /* ---------- logo líquido: gotas que cuelgan y caen del borde de las letras ---------- */
-  const texLogo = d.querySelector(".liquido__texto");
-  const capaGotas = d.querySelector("[data-gotas]");
-  const NS = "http://www.w3.org/2000/svg";
-  const ponerGotas = () => {
-    if (!texLogo || !capaGotas || capaGotas.childElementCount) return;
-    // letra, posición dentro de la letra (0-1), duración: n, b, u, l y a, como en el cartel
-    const sitios = [[0, 0.2, 3.4], [2, 0.32, 4.1], [3, 0.82, 3.1], [4, 0.5, 3.7], [5, 0.86, 2.9]];
-    let n;
-    try { n = texLogo.getNumberOfChars(); } catch (e) { return; }
-    sitios.forEach(([i, f, dur], k) => {
-      if (i >= n) return;
-      const r = texLogo.getExtentOfChar(i);
-      const x = r.x + r.width * f, y = 250;
-      const colgante = d.createElementNS(NS, "ellipse");
-      colgante.setAttribute("class", "colgante");
-      colgante.setAttribute("cx", x.toFixed(1)); colgante.setAttribute("cy", (y + 6).toFixed(1));
-      colgante.setAttribute("rx", "15"); colgante.setAttribute("ry", "24");
-      colgante.style.setProperty("--dur", `${(dur * 0.8).toFixed(2)}s`);
-      colgante.style.setProperty("--del", `${(-k * 0.7).toFixed(2)}s`);
-      const gota = d.createElementNS(NS, "circle");
-      gota.setAttribute("class", "gota");
-      gota.setAttribute("cx", x.toFixed(1)); gota.setAttribute("cy", (y + 26).toFixed(1)); gota.setAttribute("r", "13");
-      gota.style.setProperty("--dur", `${dur}s`);
-      gota.style.setProperty("--del", `${(-k * 1.1).toFixed(2)}s`);
-      gota.style.setProperty("--caida", `${100 + (k % 3) * 18}px`);
-      capaGotas.append(colgante, gota);
-    });
-  };
-  if (d.fonts && d.fonts.ready) d.fonts.ready.then(ponerGotas); else ponerGotas();
 
   /* ---------- ¡pum! de entrada: estrellas desde el logo ---------- */
   const chispas = (x, y, n, molde, clase) => {

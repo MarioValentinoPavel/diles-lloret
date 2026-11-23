@@ -655,11 +655,7 @@ p { text-wrap: pretty; }
 .volteo__carta { position: relative; display: block; transform-style: preserve-3d; transition: transform 520ms var(--ease-out); }
 .volteo__frente, .volteo__dorso { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .volteo__dorso { position: absolute; inset: 0; display: grid; place-items: center; transform: rotateY(180deg); }
-.volteo__nebula { width: 112%; max-width: none; height: auto; overflow: visible; }
-.rotulo { font-family: var(--f-titulo); font-size: 300px; }
-.rotulo__borde { fill: var(--crema); stroke: var(--crema); stroke-width: 54; stroke-linejoin: round; }
-.rotulo__linea { fill: var(--tinta); stroke: var(--tinta); stroke-width: 28; stroke-linejoin: round; }
-.rotulo__pelo { fill: var(--nebula); }
+.volteo__nebula { width: 100%; max-width: none; height: auto; filter: drop-shadow(0 0 16px rgba(200, 243, 29, 0.55)) drop-shadow(0 0 2px rgba(200, 243, 29, 0.8)); }
 @media (hover: hover) and (pointer: fine) {
   .volteo:hover .volteo__carta { transform: rotateY(-20deg) rotateX(5deg) scale(1.03); }
 }

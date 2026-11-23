@@ -32,7 +32,7 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 .n-cabecera.solida { background: var(--nebula-noche); border-bottom-color: var(--n-hilo); }
 .n-cabecera__marca { display: block; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 220ms ease, transform 220ms var(--ease-out); }
 .n-cabecera.solida .n-cabecera__marca { opacity: 1; transform: none; pointer-events: auto; }
-.n-cabecera__marca svg { width: 128px; height: auto; overflow: visible; }
+.n-cabecera__logo { width: 112px; height: auto; filter: drop-shadow(0 0 8px rgba(200, 243, 29, 0.45)); }
 .n-cabecera__cta { justify-self: end; }
 .n-volver {
   justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 5px 18px 5px 7px;
@@ -49,12 +49,6 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 }
 @media (max-width: 720px) { .n-cabecera__marca { display: none; } .n-cabecera { grid-template-columns: 1fr 1fr; } }
 
-/* el rótulo «nebula» tejido (cabecera, vinilo): el mismo que hay detrás del logo de Dile’s */
-.rotulo { font-family: var(--f-titulo); font-size: 300px; }
-.rotulo__borde { fill: var(--crema); stroke: var(--crema); stroke-width: 54; stroke-linejoin: round; }
-.rotulo__linea { fill: var(--tinta); stroke: var(--tinta); stroke-width: 28; stroke-linejoin: round; }
-.rotulo__pelo { fill: var(--nebula); }
-.rotulo__pelo--tinta { fill: var(--tinta); }
 
 /* ---------- portada: la explosión ---------- */
 .n-portada {
@@ -86,12 +80,23 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 .n-onda { position: absolute; left: 50%; top: 40%; z-index: -1; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 3px solid var(--nebula); opacity: 0; pointer-events: none; }
 
 .n-portada__contenido { position: relative; display: grid; justify-items: center; width: min(1100px, 100%); }
-.n-titulo { margin: 0; width: min(94vw, 980px, 118svh); filter: drop-shadow(0 0 26px rgba(200, 243, 29, 0.42)) drop-shadow(0 20px 26px rgba(0, 0, 0, 0.55)); }
-.liquido { display: block; width: 100%; height: auto; overflow: visible; }
-.liquido__texto { font-family: var(--f-titulo); font-size: 272px; letter-spacing: 2px; fill: var(--nebula); }
-.liquido__gotas circle, .liquido__gotas ellipse { fill: var(--nebula); }
+.n-titulo { margin: 0; width: min(88vw, 740px, 76svh); }
+/* el logo real (el de su Instagram): un reflejo lo recorre, el destello parpadea y de sus dos gotas caen gotas */
+.n-logo { position: relative; display: block; filter: drop-shadow(0 0 28px rgba(200, 243, 29, 0.5)) drop-shadow(0 18px 24px rgba(0, 0, 0, 0.55)); }
+.n-logo__img { display: block; width: 100%; height: auto; }
+.n-logo__reflejo {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
+  -webkit-mask: url("../img/nebula/logo-cromo-420.webp") center / 100% 100% no-repeat; mask: url("../img/nebula/logo-cromo-420.webp") center / 100% 100% no-repeat;
+  background: linear-gradient(105deg, transparent 40%, rgba(232, 255, 150, 0.9) 50%, transparent 60%) 160% 0 / 260% 100% no-repeat;
+}
+.n-logo__destello { position: absolute; left: 89.8%; top: 18.6%; width: 13%; aspect-ratio: 1; translate: -50% -50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 6%, rgba(226, 255, 116, 0.55) 14%, transparent 45%); }
+.n-gota { position: absolute; width: 2.4%; aspect-ratio: 0.82; translate: -50% 0; border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%; opacity: 0; pointer-events: none;
+  background: radial-gradient(circle at 36% 30%, #ffffff 0 12%, #d9e1d6 30%, #8a978a 72%, #4d5a4d); box-shadow: 0 0 10px rgba(200, 243, 29, 0.45); }
+.n-gota--n { left: 7.7%; top: 93%; }
+.n-gota--a { left: 94.5%; top: 92%; }
 .n-vol {
-  justify-self: end; margin: clamp(-5.4rem, -7vw, -2.2rem) 7% 0 0; position: relative;
+  justify-self: end; margin: clamp(-4.6rem, -6vw, -2rem) 2% 0 0; position: relative;
   display: inline-grid; place-items: center; padding: 0.2em 0.9em; border-radius: 50%;
   border: 3px solid var(--nebula); transform: rotate(-9deg);
   font: 400 clamp(1.2rem, 0.8rem + 1.4vw, 2.1rem)/1.1 var(--f-titulo); color: var(--crema); letter-spacing: 0.02em;
@@ -122,8 +127,8 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 @media (max-width: 640px) {
   .n-fecha { flex-direction: column; transform: none; border-radius: 18px; }
   .n-fecha span + span { border-left: 0; border-top: 2px solid var(--n-hilo); }
-  .n-vol { margin-right: 4%; }
-  .n-estrella--3, .n-estrella--5, .n-estrella--6 { display: none; }
+  .n-vol { margin: 2px 2% 0 0; }
+  .n-estrella--1, .n-estrella--2, .n-estrella--3, .n-estrella--5, .n-estrella--6 { display: none; }
   .n-laseres span:nth-child(2), .n-laseres span:nth-child(3) { display: none; }
   .n-botones { flex-direction: column; align-items: stretch; width: 100%; max-width: 360px; }
 }
@@ -161,11 +166,11 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
   background: conic-gradient(from 30deg, transparent 0 14%, rgba(255, 255, 255, 0.09) 20%, transparent 27% 63%, rgba(255, 255, 255, 0.07) 70%, transparent 77%);
 }
 .n-vinilo__etiqueta {
-  position: absolute; inset: 30%; border-radius: 50%; background: var(--nebula); display: grid; place-content: center; justify-items: center; gap: 2px;
+  position: absolute; inset: 30%; border-radius: 50%; background: var(--tinta); display: grid; place-content: center; justify-items: center; gap: 2px;
   box-shadow: inset 0 0 0 3px var(--tinta);
 }
-.n-vinilo__etiqueta svg { width: 82%; height: auto; overflow: visible; }
-.n-vinilo__etiqueta small { font: 800 0.62rem/1 var(--f-texto); letter-spacing: 0.14em; text-transform: uppercase; color: var(--tinta); }
+.n-vinilo__logo { width: 80%; height: auto; }
+.n-vinilo__etiqueta small { font: 800 0.62rem/1 var(--f-texto); letter-spacing: 0.14em; text-transform: uppercase; color: var(--nebula); }
 .n-vinilo__etiqueta::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: var(--nebula-noche); }
 .n-vinilo__brazo {
   position: absolute; top: -4%; right: -3%; width: 12%; height: 62%; transform-origin: 50% 8%; transform: rotate(-4deg);
@@ -215,8 +220,9 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 .pase:nth-child(3) .pase__tarjeta { background: var(--tinta); color: var(--nebula); box-shadow: 0 0 0 3px var(--nebula), 0 30px 50px -18px rgba(0, 0, 0, 0.7); }
 .pase__ranura { position: absolute; top: 12px; left: 50%; width: 56px; height: 10px; translate: -50% 0; border-radius: 6px; background: var(--n-noche-2); box-shadow: inset 0 0 0 2px var(--tinta); }
 .pase:nth-child(3) .pase__ranura { background: var(--n-noche-2); box-shadow: inset 0 0 0 2px var(--nebula); }
-.pase__marca { display: inline-flex; align-items: center; gap: 8px; font: 800 0.82rem/1 var(--f-texto); letter-spacing: 0.22em; text-transform: uppercase; }
-.pase__marca .icono { width: 24px; height: 24px; }
+.pase__marca { display: inline-block; padding: 7px 12px; border-radius: 12px; background: var(--tinta); }
+.pase:nth-child(3) .pase__marca { box-shadow: inset 0 0 0 2px var(--n-hilo); }
+.pase__logo { display: block; width: clamp(82px, 9vw, 112px); height: auto; }
 .pase__tipo { margin-top: 16px; font: 400 clamp(1.8rem, 1.4rem + 1.2vw, 2.4rem)/1 var(--f-titulo); }
 .pase__precio { margin-top: 4px; font: 400 clamp(2.4rem, 1.8rem + 2vw, 3.4rem)/1 var(--f-titulo); font-variant-numeric: tabular-nums; }
 .pase:nth-child(2) .pase__precio { color: var(--tinta); }
@@ -284,18 +290,20 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 /* pie */
 .n-pie { background: var(--tinta); }
 .n-pie__caja { display: grid; justify-items: center; gap: 18px; padding-block: clamp(44px, 6vw, 72px) 36px; text-align: center; }
-.n-volver--pie { min-height: 54px; padding-right: 22px; font-size: var(--t-base); }
+.n-volver--pie { justify-self: center; min-height: 54px; padding-right: 22px; font-size: var(--t-base); }
+.cuadros--nebula { background: conic-gradient(var(--tinta) 25%, var(--nebula) 0 50%, var(--tinta) 0 75%, var(--nebula) 0) 0 0 / 18px 18px; }
+.n-pie__logo { width: min(220px, 60vw); height: auto; filter: drop-shadow(0 0 16px rgba(200, 243, 29, 0.4)); }
 .n-pie__lema { font: 400 clamp(1.1rem, 1rem + 0.6vw, 1.5rem)/1.2 var(--f-titulo); color: var(--nebula); }
 .n-pie__legal { font-size: var(--t-nota); color: var(--n-texto-2); max-width: 60ch; }
 
 /* ---------- movimiento ---------- */
 /* ¡pum!: el logo líquido revienta desde pequeño, sale la onda, se encienden los láseres y cae el resto */
-.anima .liquido { animation: pum 1150ms cubic-bezier(0.2, 0.9, 0.25, 1.2) 100ms both; transform-origin: 50% 55%; }
+.anima .n-logo { animation: pum 1150ms cubic-bezier(0.2, 0.9, 0.25, 1.2) 100ms both; transform-origin: 50% 55%; }
 @keyframes pum {
   0% { transform: scale(0.2); opacity: 0; filter: blur(16px); }
   50% { transform: scale(1.07); opacity: 1; filter: blur(0); }
   72% { transform: scale(0.97); }
-  100% { transform: none; opacity: 1; filter: none; }
+  100% { transform: none; opacity: 1; filter: drop-shadow(0 0 28px rgba(200, 243, 29, 0.5)) drop-shadow(0 18px 24px rgba(0, 0, 0, 0.55)); }
 }
 .anima .n-onda { animation: onda-pum 1300ms cubic-bezier(0.16, 1, 0.3, 1) 380ms both; }
 @keyframes onda-pum { 0% { opacity: 0.95; transform: scale(0); } 100% { opacity: 0; transform: scale(80); } }
@@ -318,15 +326,18 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 .anima .n-cielo .estrella:nth-child(3n) { animation-duration: 4.8s; animation-delay: -3.4s; }
 .n-cuenta__u b.tic { animation: tic 420ms var(--ease-out); }
 @keyframes tic { from { transform: translateY(-38%); opacity: 0.15; } to { transform: none; opacity: 1; } }
-/* las gotas del logo caen y vuelven a formarse (las crea el JS en el borde de cada letra) */
-.anima .gota { transform-box: fill-box; transform-origin: 50% 0; animation: gotear var(--dur, 3.2s) cubic-bezier(0.55, 0, 0.8, 0.4) var(--del, 0s) infinite; }
-@keyframes gotear {
-  0% { transform: translateY(-14px) scale(0.6); }
-  55% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(var(--caida, 120px)) scale(0.55); }
+.anima .n-logo__reflejo { animation: reflejo 5.2s var(--ease-in-out) 1.6s infinite; }
+@keyframes reflejo { 0% { background-position: 160% 0; } 38%, 100% { background-position: -60% 0; } }
+.anima .n-logo__destello { animation: destello calc(var(--beat) * 4) ease-out 1.4s infinite; }
+@keyframes destello { 0% { opacity: 0; transform: scale(0.3) rotate(0deg); } 12% { opacity: 1; transform: scale(1.15) rotate(25deg); } 40%, 100% { opacity: 0; transform: scale(0.6) rotate(45deg); } }
+.anima .n-gota { animation: caer 3.6s cubic-bezier(0.55, 0, 0.8, 0.35) 1.8s infinite; }
+.anima .n-gota--a { animation-duration: 4.3s; animation-delay: 2.9s; }
+@keyframes caer {
+  0% { opacity: 0; transform: translateY(-40%) scale(0.3); }
+  18% { opacity: 1; transform: translateY(0) scale(1); }
+  55% { opacity: 1; transform: translateY(10%) scale(1, 1.12); }
+  100% { opacity: 0; transform: translateY(520%) scale(0.8); }
 }
-.anima .colgante { transform-box: fill-box; transform-origin: 50% 0; animation: colgar var(--dur, 3s) var(--ease-in-out) var(--del, 0s) infinite alternate; }
-@keyframes colgar { from { transform: scaleY(0.72); } to { transform: scaleY(1.28); } }
 /* la portada se para cuando no se ve */
 .n-portada.quieta *, .n-cintas.quieta * { animation-play-state: paused !important; }
 
