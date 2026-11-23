@@ -646,7 +646,6 @@ p { text-wrap: pretty; }
    y el fondo de Dile’s se convierte en la nebulosa verde desde el logo. Después nebula/ arranca con ese mismo logo en
    ese mismo sitio y lo lleva volando a su lugar. Con «reducir movimiento» es un fundido suave; sin JS, un enlace. */
 :root { --nebula: #c8f31d; --nebula-noche: #070b08; }
-@view-transition { navigation: auto; }
 
 .volteo { display: block; position: relative; border-radius: 28px; text-decoration: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .volteo:focus-visible { outline-offset: 12px; }
