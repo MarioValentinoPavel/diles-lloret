@@ -380,3 +380,20 @@ html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-c
 @keyframes abducir { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -10px; rotate: -6deg; } }
 @keyframes onda { 0% { opacity: 0; transform: translateY(-34px) scale(0.72); } 25% { opacity: 0.55; } 100% { opacity: 0; transform: translateY(14px) scale(1.04); } }
 @keyframes luz { 0% { fill: var(--tinta); } 50% { fill: var(--nebula-claro); } }
+
+/* ---------- llegada desde Dile’s ----------
+   La página abre con el logo en el sitio exacto donde estaba en Dile’s (lo coloca el JS) y el resto apagado;
+   cuando el logo llega a su lugar se enciende la fiesta: onda, láseres, cabecera y textos, más rápido que la entrada normal. */
+html.llegada .n-logo { opacity: 0; animation: none !important; }
+html.llegada .n-portada__contenido > :not(.n-titulo), html.llegada .n-laseres, html.llegada .n-cielo, html.llegada .n-cabecera, html.llegada .n-onda {
+  opacity: 0 !important; animation: none !important;
+}
+html.tras-llegada.anima .n-logo { animation: none; }
+html.tras-llegada.anima .n-onda { animation-delay: 0ms; }
+html.tras-llegada.anima .n-laseres { animation-delay: 80ms; }
+html.tras-llegada.anima .n-vol { animation-delay: 120ms; }
+html.tras-llegada.anima .n-lema { animation-delay: 200ms; }
+html.tras-llegada.anima .n-fecha { animation-delay: 280ms; }
+html.tras-llegada.anima .n-cuenta { animation-delay: 360ms; }
+html.tras-llegada.anima .n-botones { animation-delay: 440ms; }
+html.tras-llegada.anima .n-cabecera { animation: aparecer 500ms ease 300ms both; }

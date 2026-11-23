@@ -81,7 +81,30 @@
       ], { duration: 900 + Math.random() * 400, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" }).finished.then(() => e.remove());
     }
   };
-  if (anima) {
+  /* ---------- llegada desde Dile’s: el logo aparece donde estaba en la portada de Dile’s y vuela a su sitio ---------- */
+  const llegada = html.classList.contains("llegada") ? window.__llegada : null;
+  if (llegada) {
+    const logo = d.querySelector(".n-logo");
+    const fin = () => { html.classList.remove("llegada"); html.classList.add("tras-llegada"); };
+    if (!anima || !logo) fin();
+    else (() => {
+      const t = logo.getBoundingClientRect();
+      const dx = llegada.x - t.left, dy = llegada.y - t.top, s = llegada.w / t.width;
+      logo.style.transformOrigin = "0 0";
+      logo.style.opacity = "1";
+      logo.animate([
+        { transform: `translate(${dx}px, ${dy}px) scale(${s})` },
+        { transform: "translate(0, -10px) scale(1.04)", offset: 0.78 },
+        { transform: "none" },
+      ], { duration: 1100, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "backwards" });
+      setTimeout(() => {
+        fin();
+        const r = logo.getBoundingClientRect();
+        chispas(r.left + r.width / 2, r.top + r.height * 0.5, 18, d.querySelector(".n-cielo .estrella"), "chispa");
+      }, 820);
+    })();
+  }
+  if (anima && !llegada) {
     setTimeout(() => {
       const t = d.querySelector(".n-titulo");
       if (!t) return;
@@ -253,7 +276,7 @@ void main(){
     const ir = () => { if (!ido) { ido = true; location.href = a.href; } };
     const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, R = radioHasta(x, y);
     const p = d.createElement("div"); p.className = "portal"; p.setAttribute("aria-hidden", "true");
-    p.innerHTML = '<span class="portal__amarillo"></span><span class="portal__noche"></span>';
+    p.innerHTML = '<span class="portal__amarillo"></span><span class="fondo-nebula"></span>';
     d.body.appendChild(p);
     const [am, no] = p.children, de = `circle(0px at ${x}px ${y}px)`, hasta = `circle(${R}px at ${x}px ${y}px)`;
     am.animate([{ clipPath: de }, { clipPath: hasta }], { duration: 520, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" });

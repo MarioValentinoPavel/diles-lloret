@@ -227,6 +227,7 @@
       nota.classList.add("observa");
     });
     d.querySelectorAll(".pie__marca").forEach(el => el.classList.add("observa"));
+    d.querySelectorAll(".puerta").forEach(el => el.classList.add("observa"));
     const io = new IntersectionObserver(entradas => {
       entradas.forEach(en => {
         if (!en.isIntersecting) return;
@@ -237,108 +238,195 @@
     d.querySelectorAll(".revela, .revela-foto, .titulo-revela, .observa").forEach(el => io.observe(el));
   }
 
-  /* ---------- La puerta a Nebula: el logo se da la vuelta ----------
-     Clic en el logo: la carta gira y enseña «nebula», saltan estrellas lima, la portada tiembla y dos círculos
-     (lima y noche verde) crecen desde el logo hasta tapar la pantalla; entonces se abre nebula/, que empieza
-     en ese mismo verde. Con «reducir movimiento» o sin JS el enlace va directo. */
+  /* ---------- Metamorfosis: dile’s! se convierte en Nebula ----------
+     Todo pasa encima del propio logo, en capas fijas: 1) el logo tiembla; 2) se derrite (desplazamiento SVG) y su
+     amarillo pasa a verde; 3) del líquido sale el logo real de Nebula; 4) la nebulosa verde crece desde el logo y la
+     portada se vacía; 5) nebula/ recibe la posición del logo y lo lleva volando a su sitio.
+     Al volver desde Nebula se hace al revés. Con «reducir movimiento» es un fundido. Sin JS, un enlace normal. */
   const FIN_NEBULA = Date.parse("2026-12-05T03:00:00+01:00");
   if (Date.now() >= FIN_NEBULA) d.querySelectorAll("[data-nebula-temporal]").forEach(el => { el.hidden = true; });
 
   const volteo = d.querySelector("[data-volteo]");
   const marca = d.querySelector(".portada__marca");
+  const portada = d.querySelector(".portada");
+  const frente = volteo && volteo.querySelector(".volteo__frente");
+  const logoNebula = volteo && volteo.querySelector(".volteo__nebula");
+  const desplazamiento = d.querySelector("#derretir feDisplacementMap");
+  const suave = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const radioHasta = (x, y) => Math.ceil(Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))) + 2;
-  const crearPortal = capas => {
-    const p = d.createElement("div");
-    p.className = "portal"; p.setAttribute("aria-hidden", "true");
-    capas.forEach(c => { const s = d.createElement("span"); s.className = `portal__${c}`; p.appendChild(s); });
-    d.body.appendChild(p);
-    return p;
+  // anima un número con requestAnimationFrame (el filtro SVG no se puede animar con CSS)
+  const tween = (desde, hasta, dur, retraso, fn, curva = t => t) => {
+    const t0 = performance.now() + retraso;
+    const paso = now => {
+      const p = Math.min(1, Math.max(0, (now - t0) / dur));
+      fn(desde + (hasta - desde) * curva(p));
+      if (p < 1) requestAnimationFrame(paso);
+    };
+    requestAnimationFrame(paso);
   };
-  const chispas = (x, y, n = 14) => {
+  const entrada = t => t * t * (3 - 2 * t);
+  const chispas = (x, y, n = 16) => {
     const molde = d.querySelector(".portada__cielo .estrella");
     if (!molde) return;
     for (let i = 0; i < n; i++) {
       const e = molde.cloneNode(true);
       e.setAttribute("class", "estrella chispa");
       d.body.appendChild(e);
-      const ang = (i / n) * Math.PI * 2 + Math.random() * 0.4, dist = 160 + Math.random() * 260, giro = (Math.random() - 0.5) * 540;
-      const esc = 0.5 + Math.random() * 0.9;
+      const ang = (i / n) * Math.PI * 2 + Math.random() * 0.4, dist = 170 + Math.random() * 280, giro = (Math.random() - 0.5) * 540;
       e.animate([
-        { transform: `translate(${x - 17}px, ${y - 17}px) scale(0.2) rotate(0deg)`, opacity: 1 },
-        { transform: `translate(${x - 17 + Math.cos(ang) * dist}px, ${y - 17 + Math.sin(ang) * dist}px) scale(${esc}) rotate(${giro}deg)`, opacity: 0 },
-      ], { duration: 820 + Math.random() * 300, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" }).finished.then(() => e.remove());
+        { transform: `translate(${x - 17}px, ${y - 17}px) scale(0.2)`, opacity: 1 },
+        { transform: `translate(${x - 17 + Math.cos(ang) * dist}px, ${y - 17 + Math.sin(ang) * dist}px) scale(${0.5 + Math.random() * 0.9}) rotate(${giro}deg)`, opacity: 0 },
+      ], { duration: 850 + Math.random() * 350, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" }).finished.then(() => e.remove());
     }
   };
+  // capas: el logo de Dile’s y el de Nebula, encima de la página y en el sitio exacto del logo
+  const rectoCentro = () => {
+    const w = Math.min(innerWidth * 0.72, 480), h = w * 886 / 2508;
+    return { left: (innerWidth - w) / 2, top: innerHeight * 0.42 - h / 2, width: w, height: h };
+  };
+  const crearMeta = (r = frente.getBoundingClientRect()) => {
+    const meta = d.createElement("div");
+    meta.className = "meta"; meta.setAttribute("aria-hidden", "true");
+    Object.assign(meta.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+    meta.innerHTML = '<div class="meta__diles"></div><div class="meta__nebula"></div>';
+    const a = frente.cloneNode(); a.removeAttribute("class"); a.removeAttribute("fetchpriority"); a.alt = "";
+    const b = d.createElement("img"); b.src = logoNebula.currentSrc || logoNebula.src; b.alt = "";
+    meta.firstChild.appendChild(a); meta.lastChild.appendChild(b);
+    d.body.appendChild(meta);
+    return { meta, diles: meta.firstChild, nebula: meta.lastChild, img: a, r };
+  };
+  const fondoNebula = () => { const f = d.createElement("div"); f.className = "capa-fondo fondo-nebula"; f.setAttribute("aria-hidden", "true"); d.body.appendChild(f); return f; };
+  const filtroDiles = (img, disp, tono) => {
+    if (desplazamiento) desplazamiento.setAttribute("scale", disp.toFixed(1));
+    img.style.filter = `url(#derretir) hue-rotate(${tono.toFixed(1)}deg) saturate(${(1 + tono / 80).toFixed(2)})`;
+  };
+  const rectoDelLogo = el => { const q = el.getBoundingClientRect(); return { x: q.left, y: q.top, w: q.width, h: q.height, t: Date.now() }; };
+  const ocultarPortada = dur => portada.querySelectorAll(".portada__planeta, .portada__titulo, .portada__datos, .portada__botones, .portada__cielo, .portada__club")
+    .forEach((el, i) => el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.92) translateY(8px)" }],
+      { duration: dur, delay: i * 30, easing: "ease", fill: "forwards" }));
 
-  if (volteo && html.classList.contains("anima")) {
-    const portada = d.querySelector(".portada");
+  if (volteo && frente && logoNebula) {
+    logoNebula.loading = "eager";
     let yendo = false;
-    volteo.addEventListener("click", ev => {
+    // desde el logo de la portada (si se ve) o desde cualquier otro acceso: menú, sección Nebula, pie, preguntas
+    const metamorfosis = (destino, desdeLogo) => {
+      yendo = true;
+      marca.classList.remove("pista");
+      const rf = frente.getBoundingClientRect();
+      const logoVisible = desdeLogo || (rf.bottom > 0 && rf.top < innerHeight * 0.6);
+      const c = crearMeta(logoVisible ? rf : rectoCentro());
+      if (logoVisible) volteo.style.visibility = "hidden";
+      const cx = c.r.left + c.r.width / 2, cy = c.r.top + c.r.height / 2, R = radioHasta(cx, cy);
+      const fondo = fondoNebula();
+      let ido = false;
+      const ir = () => {
+        if (ido) return; ido = true;
+        try { sessionStorage.setItem("nebula-llegada", JSON.stringify(rectoDelLogo(c.nebula))); } catch (e) { /* sin almacenamiento: entra sin vuelo */ }
+        location.href = destino;
+      };
+      if (suave) {
+        c.diles.animate([{ opacity: logoVisible ? 1 : 0 }, { opacity: 0 }], { duration: 450, fill: "forwards" });
+        c.nebula.animate([{ opacity: 0, transform: "translateY(-50%)" }, { opacity: 1, transform: "translateY(-50%)" }], { duration: 450, fill: "forwards" });
+        fondo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, fill: "forwards" });
+        setTimeout(ir, 700);
+        return;
+      }
+      // 0. si no se ve el logo de la portada, el de Dile’s aparece en el centro sobre un velo oscuro
+      const T = logoVisible ? 0 : 380;
+      if (!logoVisible) {
+        const velo = d.createElement("div"); velo.className = "capa-fondo"; velo.style.background = "rgba(18, 19, 21, 0.92)"; velo.style.zIndex = "108";
+        d.body.appendChild(velo);
+        velo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, fill: "forwards" });
+        c.meta.animate([{ opacity: 0, transform: "scale(0.6)" }, { opacity: 1, transform: "scale(1)" }], { duration: 380, easing: "cubic-bezier(0.34, 1.4, 0.64, 1)", fill: "backwards" });
+      }
+      // 1. carga: el logo tiembla y se hincha
+      c.meta.animate([
+        { transform: "none" }, { transform: "scale(1.05) rotate(-2.5deg)", offset: 0.3 }, { transform: "scale(1.06) rotate(2.5deg)", offset: 0.6 },
+        { transform: "scale(1.04) rotate(-1deg)", offset: 0.85 }, { transform: "scale(1.05)" },
+      ], { duration: 420, delay: T, easing: "ease-in-out", fill: "forwards" });
+      // 2. se derrite: el amarillo se desplaza, gotea hacia abajo y se vuelve verde
+      tween(0, 1, 950, T + 320, p => filtroDiles(c.img, p * 78, p * 30), entrada);
+      c.diles.animate([
+        { transform: "none", opacity: 1 },
+        { transform: "translateY(3%) scaleY(1.1)", opacity: 1, offset: 0.55 },
+        { transform: "translateY(16%) scaleY(1.32)", opacity: 0 },
+      ], { duration: 950, delay: T + 320, easing: "cubic-bezier(0.55, 0, 0.8, 0.4)", fill: "forwards" });
+      // 3. del líquido sale Nebula: chispazo, estrellas y temblor
+      c.nebula.animate([
+        { opacity: 0, transform: "translateY(-46%) scale(0.72)", filter: "blur(14px) brightness(1.6)" },
+        { opacity: 1, transform: "translateY(-50%) scale(1.12)", filter: "blur(0) brightness(1.25)", offset: 0.55 },
+        { opacity: 1, transform: "translateY(-50%) scale(0.97)", filter: "blur(0) brightness(1)", offset: 0.8 },
+        { opacity: 1, transform: "translateY(-50%) scale(1)", filter: "blur(0) brightness(1)" },
+      ], { duration: 900, delay: T + 720, easing: "cubic-bezier(0.2, 0.9, 0.25, 1)", fill: "both" });
+      setTimeout(() => {
+        chispas(cx, cy);
+        portada.animate([{ transform: "translate(0,0)" }, { transform: "translate(-6px,3px)" }, { transform: "translate(5px,-4px)" }, { transform: "translate(-3px,-2px)" }, { transform: "translate(0,0)" }], { duration: 260 });
+      }, T + 1020);
+      // 4. la portada se vacía y la nebulosa crece desde el logo
+      if (logoVisible) ocultarPortada(520);
+      fondo.animate([{ clipPath: `circle(0px at ${cx}px ${cy}px)` }, { clipPath: `circle(${R}px at ${cx}px ${cy}px)` }],
+        { duration: 1000, delay: T + 560, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "both" });
+      // 5. se abre Nebula (el logo sigue en el mismo sitio y allí sale volando)
+      setTimeout(ir, T + 1900);
+    };
+    const alPulsar = desdeLogo => ev => {
       if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button > 0 || yendo) return;
       ev.preventDefault();
-      yendo = true;
-      const destino = volteo.href;
-      let ido = false;
-      const ir = () => { if (!ido) { ido = true; location.href = destino; } };
-      const r = volteo.getBoundingClientRect();
-      const x = r.left + r.width / 2, y = r.top + r.height / 2, R = radioHasta(x, y);
-      marca.classList.remove("pista");
-      volteo.classList.add("volteando");
-      // lo demás de la portada se retira mientras gira el logo
-      portada.querySelectorAll(".portada__planeta, .portada__titulo, .portada__datos, .portada__botones, .portada__cielo, .portada__club")
-        .forEach(el => el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.94)" }], { duration: 420, easing: "ease", fill: "forwards" }));
-      // ¡pum!: estrellas, temblor y el verde que lo inunda todo
-      setTimeout(() => {
-        chispas(x, y);
-        portada.animate([
-          { transform: "translate(0, 0)" }, { transform: "translate(-6px, 3px)" }, { transform: "translate(5px, -4px)" },
-          { transform: "translate(-3px, -2px)" }, { transform: "translate(2px, 2px)" }, { transform: "translate(0, 0)" },
-        ], { duration: 280, easing: "linear" });
-        const p = crearPortal(["lima", "noche"]);
-        const [lima, noche] = p.children;
-        const de = `circle(0px at ${x}px ${y}px)`, a = `circle(${R}px at ${x}px ${y}px)`;
-        lima.animate([{ clipPath: de }, { clipPath: a }], { duration: 560, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" });
-        noche.animate([{ clipPath: de }, { clipPath: a }], { duration: 560, delay: 170, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" })
-          .finished.then(ir);
-        setTimeout(ir, 1200); // si la pestaña no pinta (oculta), la animación no avanza: se va igual
-      }, 600);
-    });
+      if (menu && !menu.hidden) { menu.hidden = true; d.body.style.overflow = ""; }
+      metamorfosis(ev.currentTarget.href, desdeLogo);
+    };
+    volteo.addEventListener("click", alPulsar(true));
+    d.querySelectorAll("[data-a-nebula]").forEach(a => a.addEventListener("click", alPulsar(false)));
 
-    // al volver con «atrás» la página puede salir de la caché tal cual se quedó: se deja como al principio
+    // al volver con «atrás» la página puede salir de la caché tal cual: se deja como al principio
     addEventListener("pageshow", ev => {
       if (!ev.persisted) return;
       yendo = false;
-      volteo.classList.remove("volteando");
-      d.querySelectorAll(".portal, .chispa").forEach(el => el.remove());
+      volteo.style.visibility = "";
+      d.querySelectorAll(".meta, .capa-fondo, .chispa").forEach(el => el.remove());
       portada.querySelectorAll("*").forEach(el => el.getAnimations().forEach(a => a.cancel()));
     });
 
-    // pista: cada pocos segundos el logo se tambalea (solo mientras se ve la portada y nadie lo toca)
-    let visible = true, tocando = false;
-    if ("IntersectionObserver" in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(volteo);
-    volteo.addEventListener("pointerenter", () => { tocando = true; });
-    volteo.addEventListener("pointerleave", () => { tocando = false; });
-    const empujar = () => {
-      if (!visible || tocando || yendo || d.hidden) return;
-      marca.classList.remove("pista"); void marca.offsetWidth; marca.classList.add("pista");
-      setTimeout(() => marca.classList.remove("pista"), 2600);
-    };
-    setTimeout(() => { empujar(); setInterval(empujar, 9000); }, 3600);
+    // pista: cada pocos segundos el amarillo chisporrotea en verde (solo con la portada a la vista y sin tocarlo)
+    if (html.classList.contains("anima")) {
+      let visible = true, tocando = false;
+      if ("IntersectionObserver" in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(volteo);
+      volteo.addEventListener("pointerenter", () => { tocando = true; });
+      volteo.addEventListener("pointerleave", () => { tocando = false; });
+      const avisar = () => {
+        if (!visible || tocando || yendo || d.hidden) return;
+        marca.classList.remove("pista"); void marca.offsetWidth; marca.classList.add("pista");
+        setTimeout(() => marca.classList.remove("pista"), 2600);
+      };
+      setTimeout(() => { avisar(); setInterval(avisar, 9000); }, 3400);
+    }
   }
 
-  // vuelta desde Nebula: la noche verde se cierra hacia el logo y la carta gira de «nebula» a «dile's»
-  if (html.classList.contains("vuelta")) {
-    const p = crearPortal(["noche"]);
+  // vuelta desde Nebula: el logo de Nebula está donde iba el de Dile’s, se derrite y vuelve a ser dile’s!;
+  // la nebulosa se recoge hacia el logo
+  if (html.classList.contains("vuelta") && volteo && frente && logoNebula) {
+    const c = crearMeta();
+    const fondo = fondoNebula();
     html.classList.remove("vuelta");
-    const carta = volteo && volteo.querySelector(".volteo__carta");
-    const r = volteo ? volteo.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 3, width: 0, height: 0 };
-    const x = r.left + r.width / 2, y = r.top + r.height / 2, R = radioHasta(x, y);
-    if (html.classList.contains("anima")) {
-      p.firstChild.animate([{ clipPath: `circle(${R}px at ${x}px ${y}px)` }, { clipPath: `circle(0px at ${x}px ${y}px)` }],
-        { duration: 700, delay: 80, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }).finished.then(() => p.remove());
-      setTimeout(() => p.remove(), 2500);
-      if (carta) carta.animate([{ transform: "rotateY(180deg) scale(1.2)" }, { transform: "rotateY(-12deg)", offset: 0.75 }, { transform: "none" }],
-        { duration: 1100, delay: 200, easing: "cubic-bezier(0.34, 1.3, 0.64, 1)", fill: "backwards" });
-    } else p.remove();
+    volteo.style.visibility = "hidden";
+    const cx = c.r.left + c.r.width / 2, cy = c.r.top + c.r.height / 2, R = radioHasta(cx, cy);
+    const fin = () => { volteo.style.visibility = ""; c.meta.remove(); fondo.remove(); };
+    if (suave || !html.classList.contains("anima")) { setTimeout(fin, 50); }
+    else {
+      c.nebula.style.opacity = "1"; c.nebula.style.transform = "translateY(-50%)";
+      c.diles.style.opacity = "0";
+      filtroDiles(c.img, 78, 30);
+      c.nebula.animate([
+        { opacity: 1, transform: "translateY(-50%) scale(1)", filter: "blur(0)" },
+        { opacity: 1, transform: "translateY(-50%) scale(1.08)", filter: "blur(0)", offset: 0.3 },
+        { opacity: 0, transform: "translateY(-44%) scale(0.8)", filter: "blur(12px)" },
+      ], { duration: 700, delay: 150, easing: "ease-in", fill: "forwards" });
+      c.diles.animate([{ opacity: 0, transform: "translateY(12%) scaleY(1.25)" }, { opacity: 1, transform: "none" }],
+        { duration: 900, delay: 450, easing: "cubic-bezier(0.34, 1.4, 0.64, 1)", fill: "both" });
+      tween(1, 0, 900, 450, p => filtroDiles(c.img, p * 78, p * 30), entrada);
+      fondo.animate([{ clipPath: `circle(${R}px at ${cx}px ${cy}px)` }, { clipPath: `circle(0px at ${cx}px ${cy}px)` }],
+        { duration: 900, delay: 300, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "both" });
+      setTimeout(fin, 1500);
+    }
   }
 })();
