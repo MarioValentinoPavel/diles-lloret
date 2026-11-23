@@ -1,0 +1,371 @@
+/* Nebula · la noche verde de Dile’s
+   Subpágina de la fiesta de Fogueo. Se carga después de estilos.css: reutiliza su base, botones, estrellas y tokens,
+   y cambia el mundo: noche verde, lima del cartel, logo líquido que gotea, láseres al ritmo (95 BPM, el del dembow),
+   cintas, vinilo, pases colgantes y el platillo de Dile’s. Todo el movimiento depende de .anima (sin «reducir movimiento»). */
+@property --dilu-pelo { syntax: "<color>"; inherits: true; initial-value: #ffe11f; }
+
+.pagina-nebula {
+  --nebula: #c8f31d;
+  --nebula-claro: #e2ff74;
+  --nebula-noche: #070b08;
+  --n-noche-2: #0e160f;
+  --n-noche-3: #152117;
+  --n-hilo: rgba(200, 243, 29, 0.28);
+  --n-texto: #eef3e6;
+  --n-texto-2: #b5c2a8;
+  --beat: 631ms;
+  --foco: var(--nebula);
+  background: var(--nebula-noche); color: var(--n-texto);
+  accent-color: var(--nebula); scrollbar-color: var(--nebula) var(--nebula-noche);
+}
+html:has(.pagina-nebula) { background: var(--nebula-noche, #070b08); scrollbar-color: #c8f31d #070b08; }
+.pagina-nebula ::selection { background: var(--nebula); color: var(--tinta); }
+.pagina-nebula .saltar { background: var(--nebula); }
+
+/* ---------- cabecera ---------- */
+.n-cabecera {
+  position: fixed; inset: 0 0 auto; z-index: 40; height: var(--alto-cabecera);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+  padding-inline: max(var(--margen), calc((100% - 1320px) / 2));
+  border-bottom: 1px solid transparent; transition: background-color 220ms ease, border-color 220ms ease;
+}
+.n-cabecera.solida { background: var(--nebula-noche); border-bottom-color: var(--n-hilo); }
+.n-cabecera__marca { display: block; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 220ms ease, transform 220ms var(--ease-out); }
+.n-cabecera.solida .n-cabecera__marca { opacity: 1; transform: none; pointer-events: auto; }
+.n-cabecera__marca svg { width: 128px; height: auto; overflow: visible; }
+.n-cabecera__cta { justify-self: end; }
+.n-volver {
+  justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 5px 18px 5px 7px;
+  border-radius: 999px; border: 2px solid var(--amarillo); color: var(--crema); background: rgba(18, 19, 21, 0.7);
+  font: 700 var(--t-peq)/1 var(--f-texto); text-decoration: none; white-space: nowrap;
+  transition: background-color 180ms ease, color 180ms ease, transform 160ms var(--ease-out);
+}
+.n-volver:focus-visible { outline-color: var(--amarillo); }
+.n-volver:active { transform: scale(0.97); }
+.n-volver__dilu { width: 34px; height: auto; transition: transform 320ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .n-volver:hover { background: var(--amarillo); color: var(--tinta); }
+  .n-volver:hover .n-volver__dilu { transform: rotate(-14deg) scale(1.08); }
+}
+@media (max-width: 720px) { .n-cabecera__marca { display: none; } .n-cabecera { grid-template-columns: 1fr 1fr; } }
+
+/* el rótulo «nebula» tejido (cabecera, vinilo): el mismo que hay detrás del logo de Dile’s */
+.rotulo { font-family: var(--f-titulo); font-size: 300px; }
+.rotulo__borde { fill: var(--crema); stroke: var(--crema); stroke-width: 54; stroke-linejoin: round; }
+.rotulo__linea { fill: var(--tinta); stroke: var(--tinta); stroke-width: 28; stroke-linejoin: round; }
+.rotulo__pelo { fill: var(--nebula); }
+.rotulo__pelo--tinta { fill: var(--tinta); }
+
+/* ---------- portada: la explosión ---------- */
+.n-portada {
+  position: relative; isolation: isolate; overflow: clip; min-height: 100svh; display: grid; place-items: center; text-align: center;
+  padding: calc(var(--alto-cabecera) + 12px) var(--margen) clamp(40px, 6svh, 72px);
+}
+.n-fondo { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; display: block;
+  background: radial-gradient(ellipse 70% 55% at 50% 42%, #1f4410 0%, #0d1a0b 45%, var(--nebula-noche) 78%); }
+.n-laseres { position: absolute; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.n-laseres span {
+  position: absolute; top: -6%; width: 3px; height: 150vh; border-radius: 3px; transform-origin: 50% 0;
+  background: linear-gradient(to bottom, rgba(232, 255, 140, 0.95), rgba(200, 243, 29, 0.4) 38%, rgba(200, 243, 29, 0) 82%);
+  box-shadow: 0 0 14px 2px rgba(200, 243, 29, 0.35); mix-blend-mode: screen; opacity: 0.75;
+  transform: rotate(var(--g));
+}
+.n-laseres span:nth-child(1) { left: 4%; --g: -28deg; --g2: -6deg; }
+.n-laseres span:nth-child(2) { left: 16%; --g: -10deg; --g2: -32deg; }
+.n-laseres span:nth-child(3) { right: 16%; --g: 10deg; --g2: 32deg; }
+.n-laseres span:nth-child(4) { right: 4%; --g: 28deg; --g2: 6deg; }
+.n-cielo { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.n-cielo .estrella { position: absolute; width: 34px; }
+.n-cielo .estrella__pelo { fill: var(--nebula); }
+.n-estrella--1 { left: 8%; top: 22%; width: 48px !important; transform: rotate(-14deg); }
+.n-estrella--2 { right: 9%; top: 18%; transform: rotate(12deg); }
+.n-estrella--3 { left: 14%; bottom: 18%; width: 24px !important; }
+.n-estrella--4 { right: 13%; bottom: 24%; width: 44px !important; transform: rotate(-8deg); }
+.n-estrella--5 { left: 30%; top: 12%; width: 20px !important; }
+.n-estrella--6 { right: 28%; bottom: 10%; width: 22px !important; }
+.n-onda { position: absolute; left: 50%; top: 40%; z-index: -1; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 3px solid var(--nebula); opacity: 0; pointer-events: none; }
+
+.n-portada__contenido { position: relative; display: grid; justify-items: center; width: min(1100px, 100%); }
+.n-titulo { margin: 0; width: min(94vw, 980px, 118svh); filter: drop-shadow(0 0 26px rgba(200, 243, 29, 0.42)) drop-shadow(0 20px 26px rgba(0, 0, 0, 0.55)); }
+.liquido { display: block; width: 100%; height: auto; overflow: visible; }
+.liquido__texto { font-family: var(--f-titulo); font-size: 272px; letter-spacing: 2px; fill: var(--nebula); }
+.liquido__gotas circle, .liquido__gotas ellipse { fill: var(--nebula); }
+.n-vol {
+  justify-self: end; margin: clamp(-5.4rem, -7vw, -2.2rem) 7% 0 0; position: relative;
+  display: inline-grid; place-items: center; padding: 0.2em 0.9em; border-radius: 50%;
+  border: 3px solid var(--nebula); transform: rotate(-9deg);
+  font: 400 clamp(1.2rem, 0.8rem + 1.4vw, 2.1rem)/1.1 var(--f-titulo); color: var(--crema); letter-spacing: 0.02em;
+}
+.n-vol span { display: block; transform: skewX(-10deg); }
+.n-lema { margin-top: clamp(14px, 2.2svh, 22px); font: 400 clamp(1.35rem, 0.95rem + 1.6vw, 2.4rem)/1.1 var(--f-titulo); color: var(--crema); max-width: 22ch; }
+.n-fecha {
+  margin-top: clamp(14px, 2.2svh, 22px); display: inline-flex; flex-wrap: wrap; justify-content: center;
+  border: 2px solid var(--nebula); border-radius: 14px; background: rgba(7, 11, 8, 0.66); transform: skewX(-10deg);
+}
+.n-fecha span { padding: 10px 18px; font: 800 0.95rem/1.2 var(--f-texto); letter-spacing: 0.08em; text-transform: uppercase; color: var(--crema); }
+.n-fecha span:first-child { color: var(--nebula); }
+.n-fecha span + span { border-left: 2px solid var(--n-hilo); }
+.n-cuenta { margin-top: clamp(16px, 2.6svh, 26px); display: grid; justify-items: center; }
+.n-cuenta__texto { font-weight: 700; color: var(--n-texto-2); }
+.n-cuenta__reloj { display: flex; gap: clamp(8px, 1vw, 12px); }
+.n-cuenta__reloj[hidden] { display: none; }
+.n-cuenta__u { display: grid; justify-items: center; gap: 4px; min-width: clamp(64px, 7vw, 84px); padding: 10px 8px 9px; border-radius: 16px; background: rgba(14, 22, 15, 0.85); border: 2px solid var(--n-hilo); }
+.n-cuenta__u b { display: block; font: 400 clamp(1.7rem, 1.1rem + 1.8vw, 2.6rem)/1 var(--f-titulo); color: var(--nebula); font-variant-numeric: tabular-nums; }
+.n-cuenta__u small { font: 800 0.7rem/1 var(--f-texto); letter-spacing: 0.16em; text-transform: uppercase; color: var(--n-texto-2); }
+.n-botones { margin-top: clamp(18px, 3svh, 30px); display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 16px; }
+.boton--nebula { background: var(--nebula); }
+.boton--nebula .icono { width: 1.35em; height: 1.35em; }
+@media (hover: hover) and (pointer: fine) {
+  .boton--nebula:hover { background: var(--nebula-claro); }
+  .boton--hueco-nebula:hover { background: var(--nebula); border-color: var(--nebula); color: var(--tinta); }
+}
+@media (max-width: 640px) {
+  .n-fecha { flex-direction: column; transform: none; border-radius: 18px; }
+  .n-fecha span + span { border-left: 0; border-top: 2px solid var(--n-hilo); }
+  .n-vol { margin-right: 4%; }
+  .n-estrella--3, .n-estrella--5, .n-estrella--6 { display: none; }
+  .n-laseres span:nth-child(2), .n-laseres span:nth-child(3) { display: none; }
+  .n-botones { flex-direction: column; align-items: stretch; width: 100%; max-width: 360px; }
+}
+
+/* ---------- cintas cruzadas ---------- */
+.n-cintas { position: relative; height: clamp(150px, 16vw, 230px); overflow: clip; display: grid; place-items: center; }
+.n-cinta { position: absolute; left: -5%; width: 110%; overflow: hidden; }
+.n-cinta--lima { background: var(--nebula); color: var(--tinta); transform: rotate(-4.6deg); z-index: 1; border-block: 3px solid var(--tinta); }
+.n-cinta--negra { background: var(--tinta); color: var(--nebula); transform: rotate(4.2deg); border-block: 2px solid var(--nebula); }
+.n-cinta__pista { display: flex; align-items: center; width: max-content; }
+.n-cinta__pista > span { padding: 13px 0.7em; font: 400 clamp(1rem, 0.8rem + 0.9vw, 1.5rem)/1 var(--f-titulo); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+.n-chispa { width: 1.1em; height: 1.1em; flex: none; fill: currentColor; font-size: clamp(1rem, 0.8rem + 0.9vw, 1.5rem); }
+.anima .n-cinta__pista { animation: cinta 46s linear infinite; }
+.anima .n-cinta--negra .n-cinta__pista { animation-direction: reverse; animation-duration: 52s; }
+@keyframes cinta { to { transform: translateX(-50%); } }
+
+/* ---------- secciones ---------- */
+.n-noche, .n-entradas, .n-fogueo, .n-donde { padding-block: var(--seccion); }
+.n-entradas { background: var(--n-noche-2); }
+.n-h2 { font: 400 clamp(2.2rem, 1.5rem + 2.6vw, 3.8rem)/1.02 var(--f-titulo); color: var(--nebula); letter-spacing: -0.01em; }
+.n-entrada { margin-top: 14px; font-size: var(--t-entrada); color: var(--n-texto); max-width: 48ch; }
+.n-cabeza { display: grid; justify-items: center; text-align: center; }
+.n-nota { font-size: var(--t-peq); color: var(--n-texto-2); }
+
+/* qué habrá: un vinilo que gira y la lista como si fuera una tracklist */
+.n-noche__rejilla { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
+.n-vinilo { position: relative; width: min(100%, 460px); aspect-ratio: 1; justify-self: center; }
+.n-vinilo__disco {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: repeating-radial-gradient(circle at 50% 50%, #0a0c0b 0 2px, #171c18 2px 3.5px);
+  border: 3px solid var(--tinta); box-shadow: 0 0 0 4px var(--crema), 0 34px 60px -18px rgba(0, 0, 0, 0.7), 0 0 60px -10px rgba(200, 243, 29, 0.25);
+}
+.n-vinilo::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 30deg, transparent 0 14%, rgba(255, 255, 255, 0.09) 20%, transparent 27% 63%, rgba(255, 255, 255, 0.07) 70%, transparent 77%);
+}
+.n-vinilo__etiqueta {
+  position: absolute; inset: 30%; border-radius: 50%; background: var(--nebula); display: grid; place-content: center; justify-items: center; gap: 2px;
+  box-shadow: inset 0 0 0 3px var(--tinta);
+}
+.n-vinilo__etiqueta svg { width: 82%; height: auto; overflow: visible; }
+.n-vinilo__etiqueta small { font: 800 0.62rem/1 var(--f-texto); letter-spacing: 0.14em; text-transform: uppercase; color: var(--tinta); }
+.n-vinilo__etiqueta::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: var(--nebula-noche); }
+.n-vinilo__brazo {
+  position: absolute; top: -4%; right: -3%; width: 12%; height: 62%; transform-origin: 50% 8%; transform: rotate(-4deg);
+  transition: transform 1100ms var(--ease-out);
+}
+.n-vinilo__brazo::before { content: ""; position: absolute; left: 50%; top: 0; width: 46%; aspect-ratio: 1; translate: -50% 0; border-radius: 50%; background: var(--crema); border: 3px solid var(--tinta); }
+.n-vinilo__brazo::after { content: ""; position: absolute; left: 50%; top: 8%; bottom: 0; width: 18%; translate: -50% 0; width: 34%; border-radius: 8px; background: var(--crema); border: 3px solid var(--tinta); border-bottom-width: 16px; border-bottom-color: var(--nebula); }
+.n-vinilo.sonando .n-vinilo__brazo { transform: rotate(24deg); }
+.anima .n-vinilo__disco { animation: girar 1.8s linear infinite; animation-play-state: paused; }
+.anima .n-vinilo.sonando .n-vinilo__disco { animation-play-state: running; }
+@keyframes girar { to { rotate: 360deg; } }
+
+.n-lista { margin-top: 26px; }
+.n-pista { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(238, 243, 230, 0.1); }
+.n-pista:last-child { border-bottom: 0; }
+.n-pista > .icono { width: 30px; height: 30px; color: var(--nebula); }
+.n-pista__nombre { font: 400 clamp(1.15rem, 1rem + 0.4vw, 1.35rem)/1.15 var(--f-titulo); color: var(--crema); transition: color 200ms ease; }
+.n-pista__nota { margin-top: 3px; color: var(--n-texto-2); font-size: var(--t-peq); }
+.n-pista.sonando .n-pista__nombre { color: var(--nebula); }
+.n-eq { display: inline-flex; align-items: flex-end; gap: 3px; height: 22px; opacity: 0.35; transition: opacity 200ms ease; }
+.n-eq i { width: 4px; height: 100%; border-radius: 2px; background: var(--nebula); transform-origin: 50% 100%; transform: scaleY(0.25); }
+.n-pista.sonando .n-eq { opacity: 1; }
+.anima .n-pista.sonando .n-eq i { animation: eq var(--beat) ease-in-out infinite alternate; }
+.anima .n-pista.sonando .n-eq i:nth-child(2) { animation-duration: calc(var(--beat) * 0.5); animation-delay: -120ms; }
+.anima .n-pista.sonando .n-eq i:nth-child(3) { animation-duration: calc(var(--beat) * 0.75); animation-delay: -260ms; }
+.anima .n-pista.sonando .n-eq i:nth-child(4) { animation-duration: calc(var(--beat) * 0.5); animation-delay: -60ms; }
+@keyframes eq { 0% { transform: scaleY(0.2); } 100% { transform: scaleY(1); } }
+@media (max-width: 860px) {
+  .n-noche__rejilla { grid-template-columns: minmax(0, 1fr); }
+  .n-vinilo { width: min(76vw, 360px); }
+}
+
+/* entradas: dos pases colgados de una barra que se balancean */
+.n-pases { position: relative; display: flex; justify-content: center; gap: clamp(28px, 7vw, 110px); margin-top: clamp(36px, 5vw, 56px); padding-top: 6px; }
+.n-pases__barra { position: absolute; top: 0; left: 50%; width: min(760px, 92%); translate: -50% 0; height: 12px; border-radius: 6px; background: var(--tinta); box-shadow: 0 0 0 3px var(--crema); }
+.pase { position: relative; width: min(300px, 43vw); display: flex; flex-direction: column; align-items: center; transform-origin: 50% 0; will-change: transform; }
+.pase__cinta {
+  position: relative; width: 36px; height: clamp(70px, 10vw, 130px); overflow: hidden;
+  background: var(--nebula); border: 3px solid var(--tinta); border-top: 0; border-bottom: 0;
+}
+.pase__cinta::before { content: "nebula nebula nebula nebula"; position: absolute; inset: 0; writing-mode: vertical-rl; text-align: center; font: 400 0.8rem/30px var(--f-titulo); letter-spacing: 0.12em; color: var(--tinta); white-space: nowrap; }
+.pase__tarjeta {
+  position: relative; width: 100%; margin-top: -2px; padding: 34px clamp(18px, 2vw, 26px) 22px; text-align: left;
+  border-radius: 24px; border: 3px solid var(--tinta); box-shadow: 0 0 0 3px var(--crema), 0 30px 50px -18px rgba(0, 0, 0, 0.7);
+  background: var(--nebula); color: var(--tinta);
+}
+.pase:nth-child(3) .pase__tarjeta { background: var(--tinta); color: var(--nebula); box-shadow: 0 0 0 3px var(--nebula), 0 30px 50px -18px rgba(0, 0, 0, 0.7); }
+.pase__ranura { position: absolute; top: 12px; left: 50%; width: 56px; height: 10px; translate: -50% 0; border-radius: 6px; background: var(--n-noche-2); box-shadow: inset 0 0 0 2px var(--tinta); }
+.pase:nth-child(3) .pase__ranura { background: var(--n-noche-2); box-shadow: inset 0 0 0 2px var(--nebula); }
+.pase__marca { display: inline-flex; align-items: center; gap: 8px; font: 800 0.82rem/1 var(--f-texto); letter-spacing: 0.22em; text-transform: uppercase; }
+.pase__marca .icono { width: 24px; height: 24px; }
+.pase__tipo { margin-top: 16px; font: 400 clamp(1.8rem, 1.4rem + 1.2vw, 2.4rem)/1 var(--f-titulo); }
+.pase__precio { margin-top: 4px; font: 400 clamp(2.4rem, 1.8rem + 2vw, 3.4rem)/1 var(--f-titulo); font-variant-numeric: tabular-nums; }
+.pase:nth-child(2) .pase__precio { color: var(--tinta); }
+.pase:nth-child(3) .pase__tipo, .pase:nth-child(3) .pase__condiciones { color: var(--crema); }
+.pase__condiciones { margin-top: 14px; display: grid; }
+.pase__condiciones li { padding: 9px 0; font-weight: 700; border-top: 2px dashed currentColor; }
+.pase:nth-child(2) .pase__condiciones li { border-top-color: rgba(13, 14, 15, 0.35); }
+.pase:nth-child(3) .pase__condiciones li { border-top-color: rgba(200, 243, 29, 0.35); }
+.pase__codigo {
+  display: block; height: 34px; margin-top: 12px; border-radius: 4px; opacity: 0.9;
+  background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 8px, currentColor 8px 11px, transparent 11px 13px);
+}
+.n-entradas__pie { margin-top: clamp(40px, 5vw, 56px); display: grid; justify-items: center; gap: 14px; text-align: center; }
+.anima .pase:not(.colgado) { opacity: 0; }
+.pase { transition: opacity 400ms ease; }
+@media (max-width: 560px) {
+  .n-pases { gap: 14px; }
+  .pase { width: 46vw; }
+  .pase__tarjeta { padding: 30px 14px 18px; border-radius: 20px; }
+  .pase__marca { letter-spacing: 0.12em; font-size: 0.72rem; }
+  .pase__condiciones li { font-size: 0.88rem; }
+}
+
+/* el cartel de Fogueo: un brillo lo recorre al llegar */
+.n-fogueo__rejilla { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: clamp(40px, 7vw, 110px); align-items: center; justify-content: center; }
+.n-poster {
+  position: relative; display: block; border-radius: var(--r-foto); overflow: hidden;
+  border: 3px solid var(--tinta); box-shadow: 0 0 0 3px var(--crema), 0 40px 80px -24px rgba(200, 243, 29, 0.35);
+  transition: transform 360ms var(--ease-out);
+}
+.n-poster img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.n-poster__brillo { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.42) 50%, transparent 62%); transform: translateX(-130%); }
+.anima .n-poster.visto .n-poster__brillo { animation: brillo 1400ms var(--ease-in-out) 200ms; }
+@keyframes brillo { to { transform: translateX(130%); } }
+@media (hover: hover) and (pointer: fine) {
+  .n-poster:hover { transform: translateY(-6px) rotate(-1deg); }
+  .anima .n-poster:hover .n-poster__brillo { animation: brillo 1100ms var(--ease-in-out); }
+}
+.n-redes { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px 12px; }
+.n-red {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 999px;
+  border: 2px solid var(--n-hilo); color: var(--n-texto); font-weight: 700; text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+.n-red .icono { color: var(--nebula); transition: color 180ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .n-red:hover { background: var(--nebula); border-color: var(--nebula); color: var(--tinta); }
+  .n-red:hover .icono { color: var(--tinta); }
+}
+@media (max-width: 860px) {
+  .n-fogueo__rejilla { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; }
+  .n-poster { width: min(86vw, 440px); }
+  .n-fogueo__texto { display: grid; justify-items: center; }
+  .n-redes { justify-content: center; }
+}
+
+/* dónde: el platillo deja a Dilu en Dile’s */
+.n-donde { background: var(--n-noche-2); }
+.n-donde__caja { display: grid; justify-items: center; text-align: center; }
+.n-donde__emblema { margin-bottom: 8px; }
+.n-donde__dir { margin-top: 18px; font: 400 clamp(1.7rem, 1.2rem + 1.6vw, 2.6rem)/1.1 var(--f-titulo); color: var(--crema); }
+.n-donde__dir span { display: block; margin-top: 8px; font: 600 var(--t-base)/1.3 var(--f-texto); color: var(--n-texto-2); }
+.n-donde__hora { margin-top: 14px; font: 800 0.95rem/1.3 var(--f-texto); letter-spacing: 0.1em; text-transform: uppercase; color: var(--nebula); }
+
+/* pie */
+.n-pie { background: var(--tinta); }
+.n-pie__caja { display: grid; justify-items: center; gap: 18px; padding-block: clamp(44px, 6vw, 72px) 36px; text-align: center; }
+.n-volver--pie { min-height: 54px; padding-right: 22px; font-size: var(--t-base); }
+.n-pie__lema { font: 400 clamp(1.1rem, 1rem + 0.6vw, 1.5rem)/1.2 var(--f-titulo); color: var(--nebula); }
+.n-pie__legal { font-size: var(--t-nota); color: var(--n-texto-2); max-width: 60ch; }
+
+/* ---------- movimiento ---------- */
+/* ¡pum!: el logo líquido revienta desde pequeño, sale la onda, se encienden los láseres y cae el resto */
+.anima .liquido { animation: pum 1150ms cubic-bezier(0.2, 0.9, 0.25, 1.2) 100ms both; transform-origin: 50% 55%; }
+@keyframes pum {
+  0% { transform: scale(0.2); opacity: 0; filter: blur(16px); }
+  50% { transform: scale(1.07); opacity: 1; filter: blur(0); }
+  72% { transform: scale(0.97); }
+  100% { transform: none; opacity: 1; filter: none; }
+}
+.anima .n-onda { animation: onda-pum 1300ms cubic-bezier(0.16, 1, 0.3, 1) 380ms both; }
+@keyframes onda-pum { 0% { opacity: 0.95; transform: scale(0); } 100% { opacity: 0; transform: scale(80); } }
+.anima .n-laseres { animation: aparecer 900ms ease 650ms both; }
+.anima .n-laseres span { animation: barrido calc(var(--beat) * 8) var(--ease-in-out) infinite alternate, pulso-laser calc(var(--beat) * 2) ease-in-out infinite; }
+.anima .n-laseres span:nth-child(even) { animation-delay: calc(var(--beat) * -4), calc(var(--beat) * -1); }
+@keyframes barrido { from { transform: rotate(var(--g)); } to { transform: rotate(var(--g2)); } }
+@keyframes pulso-laser { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.4; } }
+.anima .n-vol { animation: vol 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 820ms both; }
+.anima .n-vol span { animation: latir var(--beat) ease-out 1600ms infinite; }
+@keyframes vol { from { opacity: 0; transform: rotate(-30deg) scale(0.4); } to { opacity: 1; transform: rotate(-9deg); } }
+@keyframes latir { 0% { scale: 1.08; } 60%, 100% { scale: 1; } }
+.anima .n-lema { animation: subir 640ms var(--ease-out) 900ms both; }
+.anima .n-fecha { animation: fecha 640ms var(--ease-out) 980ms both; }
+@keyframes fecha { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+.anima .n-cuenta { animation: subir 640ms var(--ease-out) 1060ms both; }
+.anima .n-botones { animation: subir 640ms var(--ease-out) 1140ms both; }
+.anima .n-cielo .estrella { animation: titilar 5.4s var(--ease-in-out) infinite; }
+.anima .n-cielo .estrella:nth-child(2n) { animation-duration: 6.6s; animation-delay: -2s; }
+.anima .n-cielo .estrella:nth-child(3n) { animation-duration: 4.8s; animation-delay: -3.4s; }
+.n-cuenta__u b.tic { animation: tic 420ms var(--ease-out); }
+@keyframes tic { from { transform: translateY(-38%); opacity: 0.15; } to { transform: none; opacity: 1; } }
+/* las gotas del logo caen y vuelven a formarse (las crea el JS en el borde de cada letra) */
+.anima .gota { transform-box: fill-box; transform-origin: 50% 0; animation: gotear var(--dur, 3.2s) cubic-bezier(0.55, 0, 0.8, 0.4) var(--del, 0s) infinite; }
+@keyframes gotear {
+  0% { transform: translateY(-14px) scale(0.6); }
+  55% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(var(--caida, 120px)) scale(0.55); }
+}
+.anima .colgante { transform-box: fill-box; transform-origin: 50% 0; animation: colgar var(--dur, 3s) var(--ease-in-out) var(--del, 0s) infinite alternate; }
+@keyframes colgar { from { transform: scaleY(0.72); } to { transform: scaleY(1.28); } }
+/* la portada se para cuando no se ve */
+.n-portada.quieta *, .n-cintas.quieta * { animation-play-state: paused !important; }
+
+/* títulos de sección: suben y la lima se enciende */
+.anima .n-h2.revela { opacity: 0; transform: translateY(22px) scale(0.98); transition: opacity 500ms ease, transform 760ms var(--ease-out); }
+.anima .n-h2.revela.visto { opacity: 1; transform: none; }
+
+/* platillo de Dile’s (el mismo de la v1), aquí en la sección «Dónde» */
+.nebula__emblema { position: relative; width: clamp(200px, 20vw, 280px); aspect-ratio: 320 / 300; }
+.platillo { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.platillo__luz { fill: var(--nebula); opacity: 0.16; }
+.platillo__ondas ellipse { fill: none; stroke: var(--nebula); stroke-width: 3; opacity: 0.5; }
+.platillo__borde > * { fill: var(--crema); stroke: var(--crema); stroke-width: 15; stroke-linejoin: round; }
+.platillo__pieza { stroke: var(--tinta); stroke-width: 8; stroke-linejoin: round; }
+.platillo__antena { fill: var(--tinta); }
+.platillo__bola, .platillo__casco { fill: var(--nebula); }
+.platillo__cupula { fill: var(--nebula-claro); }
+.platillo__brillo { fill: none; stroke: var(--crema); stroke-width: 7; stroke-linecap: round; }
+.platillo__franja { fill: none; stroke: var(--tinta); stroke-width: 6; stroke-linecap: round; }
+.platillo__luces circle { fill: var(--tinta); }
+.nebula__dilu { position: absolute; left: 32%; bottom: 14%; width: 34%; --dilu-pelo: var(--nebula); }
+.nebula__dilu .dilu { width: 100%; height: auto; transform: rotate(8deg); }
+.anima .platillo__nave { transition: opacity 500ms ease, transform 900ms var(--ease-out); }
+.anima .platillo__haz { transform-box: fill-box; transform-origin: 50% 0; transition: transform 700ms var(--ease-out) 500ms, opacity 300ms ease 500ms; }
+.anima .nebula__dilu { transition: transform 1500ms var(--ease-out) 750ms, opacity 400ms ease 750ms, --dilu-pelo 900ms ease 1500ms; }
+.anima .nebula__emblema:not(.visto) .platillo__nave { opacity: 0; transform: translateY(-36px); }
+.anima .nebula__emblema:not(.visto) .platillo__haz { opacity: 0; transform: scaleY(0); }
+.anima .nebula__emblema:not(.visto) .nebula__dilu { opacity: 0; transform: translateY(70%) scale(0.86); --dilu-pelo: var(--amarillo); }
+.anima .nebula__emblema.visto .platillo { animation: vaiven 5.2s var(--ease-in-out) 2.4s infinite; }
+.anima .nebula__emblema.visto .nebula__dilu .dilu { animation: abducir 6s var(--ease-in-out) 2.6s infinite; }
+.anima .nebula__emblema.visto .platillo__ondas ellipse { transform-box: fill-box; transform-origin: 50% 50%; animation: onda 2.7s linear infinite; }
+.anima .nebula__emblema.visto .platillo__ondas ellipse:nth-child(2) { animation-delay: 0.9s; }
+.anima .nebula__emblema.visto .platillo__ondas ellipse:nth-child(3) { animation-delay: 1.8s; }
+.anima .nebula__emblema.visto .platillo__luces circle { animation: luz 1.8s steps(1, end) infinite; }
+.anima .nebula__emblema.visto .platillo__luces circle:nth-child(even) { animation-delay: 0.9s; }
+.anima .nebula__emblema:not(.en-pantalla) .platillo,
+.anima .nebula__emblema:not(.en-pantalla) .platillo *,
+.anima .nebula__emblema:not(.en-pantalla) .dilu { animation-play-state: paused; }
+@keyframes vaiven { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+@keyframes abducir { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -10px; rotate: -6deg; } }
+@keyframes onda { 0% { opacity: 0; transform: translateY(-34px) scale(0.72); } 25% { opacity: 0.55; } 100% { opacity: 0; transform: translateY(14px) scale(1.04); } }
+@keyframes luz { 0% { fill: var(--tinta); } 50% { fill: var(--nebula-claro); } }

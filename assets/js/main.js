@@ -237,47 +237,108 @@
     d.querySelectorAll(".revela, .revela-foto, .titulo-revela, .observa").forEach(el => io.observe(el));
   }
 
-  /* ---------- Nebula: estado de la fiesta según la fecha (hora de Lloret) ----------
-     Antes: cuenta los días. El día: «es hoy». Durante: «ahora mismo». Después: se quitan el aviso de la portada,
-     el botón de entradas y las preguntas de esta edición, y se manda a su Instagram.
-     ?nebula=2026-12-04T23:30 permite revisar cualquier momento (hora de Madrid). */
-  const nebula = d.querySelector("[data-nebula]");
-  if (nebula) {
-    const N = {
-      dia: "2026-12-04",
-      inicio: Date.parse("2026-12-04T23:00:00+01:00"),
-      finLista: Date.parse("2026-12-05T00:30:00+01:00"),
-      fin: Date.parse("2026-12-05T03:00:00+01:00"),
-    };
-    const estadoN = nebula.querySelector("[data-nebula-estado]");
-    const fechaMadrid = t => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit" }).format(t);
-    const diasEntre = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 864e5);
-    const pintarNebula = () => {
-      const prueba = params.get("nebula");
-      const t = prueba ? Date.parse(`${prueba}:00+01:00`) : Date.now();
-      if (Number.isNaN(t)) return;
-      const faltan = diasEntre(fechaMadrid(t), N.dia);
-      let fase, texto;
-      if (t >= N.fin) { fase = "pasado"; texto = "Nebula Vol. 1 ya pasó. Las próximas fechas, en @nebula.theroom"; }
-      else if (t >= N.inicio) { fase = "ahora"; texto = t < N.finLista ? "Ahora mismo en Dile’s, hasta las 03:00. Lista gratis hasta las 00:30" : "Ahora mismo en Dile’s, hasta las 03:00"; }
-      else if (faltan <= 0) { fase = "hoy"; texto = "Es hoy, a partir de las 23:00"; }
-      else if (faltan === 1) { fase = "antes"; texto = "Es mañana, viernes 4 de diciembre, a las 23:00"; }
-      else { fase = "antes"; texto = `Faltan ${faltan} días: viernes 4 de diciembre`; }
-      nebula.dataset.fase = fase;
-      if (estadoN) estadoN.textContent = texto;
-      const pasado = fase === "pasado";
-      d.querySelectorAll("[data-aviso-nebula], [data-nebula-entradas], [data-nebula-temporal]").forEach(el => { el.hidden = pasado; });
-    };
-    pintarNebula();
-    setInterval(pintarNebula, 60 * 1000);
+  /* ---------- La puerta a Nebula: el logo se da la vuelta ----------
+     Clic en el logo: la carta gira y enseña «nebula», saltan estrellas lima, la portada tiembla y dos círculos
+     (lima y noche verde) crecen desde el logo hasta tapar la pantalla; entonces se abre nebula/, que empieza
+     en ese mismo verde. Con «reducir movimiento» o sin JS el enlace va directo. */
+  const FIN_NEBULA = Date.parse("2026-12-05T03:00:00+01:00");
+  if (Date.now() >= FIN_NEBULA) d.querySelectorAll("[data-nebula-temporal]").forEach(el => { el.hidden = true; });
 
-    // el platillo abduce a Dilu la primera vez que se ve; los bucles solo corren mientras está en pantalla
-    const emblema = nebula.querySelector(".nebula__emblema");
-    if (emblema && html.classList.contains("anima") && "IntersectionObserver" in window) {
-      new IntersectionObserver(([en]) => {
-        emblema.classList.toggle("en-pantalla", en.isIntersecting);
-        if (en.isIntersecting) emblema.classList.add("visto");
-      }, { rootMargin: "0px 0px -10% 0px", threshold: 0.35 }).observe(emblema);
+  const volteo = d.querySelector("[data-volteo]");
+  const marca = d.querySelector(".portada__marca");
+  const radioHasta = (x, y) => Math.ceil(Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))) + 2;
+  const crearPortal = capas => {
+    const p = d.createElement("div");
+    p.className = "portal"; p.setAttribute("aria-hidden", "true");
+    capas.forEach(c => { const s = d.createElement("span"); s.className = `portal__${c}`; p.appendChild(s); });
+    d.body.appendChild(p);
+    return p;
+  };
+  const chispas = (x, y, n = 14) => {
+    const molde = d.querySelector(".portada__cielo .estrella");
+    if (!molde) return;
+    for (let i = 0; i < n; i++) {
+      const e = molde.cloneNode(true);
+      e.setAttribute("class", "estrella chispa");
+      d.body.appendChild(e);
+      const ang = (i / n) * Math.PI * 2 + Math.random() * 0.4, dist = 160 + Math.random() * 260, giro = (Math.random() - 0.5) * 540;
+      const esc = 0.5 + Math.random() * 0.9;
+      e.animate([
+        { transform: `translate(${x - 17}px, ${y - 17}px) scale(0.2) rotate(0deg)`, opacity: 1 },
+        { transform: `translate(${x - 17 + Math.cos(ang) * dist}px, ${y - 17 + Math.sin(ang) * dist}px) scale(${esc}) rotate(${giro}deg)`, opacity: 0 },
+      ], { duration: 820 + Math.random() * 300, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" }).finished.then(() => e.remove());
     }
+  };
+
+  if (volteo && html.classList.contains("anima")) {
+    const portada = d.querySelector(".portada");
+    let yendo = false;
+    volteo.addEventListener("click", ev => {
+      if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button > 0 || yendo) return;
+      ev.preventDefault();
+      yendo = true;
+      const destino = volteo.href;
+      let ido = false;
+      const ir = () => { if (!ido) { ido = true; location.href = destino; } };
+      const r = volteo.getBoundingClientRect();
+      const x = r.left + r.width / 2, y = r.top + r.height / 2, R = radioHasta(x, y);
+      marca.classList.remove("pista");
+      volteo.classList.add("volteando");
+      // lo demás de la portada se retira mientras gira el logo
+      portada.querySelectorAll(".portada__planeta, .portada__titulo, .portada__datos, .portada__botones, .portada__cielo, .portada__club")
+        .forEach(el => el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.94)" }], { duration: 420, easing: "ease", fill: "forwards" }));
+      // ¡pum!: estrellas, temblor y el verde que lo inunda todo
+      setTimeout(() => {
+        chispas(x, y);
+        portada.animate([
+          { transform: "translate(0, 0)" }, { transform: "translate(-6px, 3px)" }, { transform: "translate(5px, -4px)" },
+          { transform: "translate(-3px, -2px)" }, { transform: "translate(2px, 2px)" }, { transform: "translate(0, 0)" },
+        ], { duration: 280, easing: "linear" });
+        const p = crearPortal(["lima", "noche"]);
+        const [lima, noche] = p.children;
+        const de = `circle(0px at ${x}px ${y}px)`, a = `circle(${R}px at ${x}px ${y}px)`;
+        lima.animate([{ clipPath: de }, { clipPath: a }], { duration: 560, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" });
+        noche.animate([{ clipPath: de }, { clipPath: a }], { duration: 560, delay: 170, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" })
+          .finished.then(ir);
+        setTimeout(ir, 1200); // si la pestaña no pinta (oculta), la animación no avanza: se va igual
+      }, 600);
+    });
+
+    // al volver con «atrás» la página puede salir de la caché tal cual se quedó: se deja como al principio
+    addEventListener("pageshow", ev => {
+      if (!ev.persisted) return;
+      yendo = false;
+      volteo.classList.remove("volteando");
+      d.querySelectorAll(".portal, .chispa").forEach(el => el.remove());
+      portada.querySelectorAll("*").forEach(el => el.getAnimations().forEach(a => a.cancel()));
+    });
+
+    // pista: cada pocos segundos el logo se tambalea (solo mientras se ve la portada y nadie lo toca)
+    let visible = true, tocando = false;
+    if ("IntersectionObserver" in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(volteo);
+    volteo.addEventListener("pointerenter", () => { tocando = true; });
+    volteo.addEventListener("pointerleave", () => { tocando = false; });
+    const empujar = () => {
+      if (!visible || tocando || yendo || d.hidden) return;
+      marca.classList.remove("pista"); void marca.offsetWidth; marca.classList.add("pista");
+      setTimeout(() => marca.classList.remove("pista"), 2600);
+    };
+    setTimeout(() => { empujar(); setInterval(empujar, 9000); }, 3600);
+  }
+
+  // vuelta desde Nebula: la noche verde se cierra hacia el logo y la carta gira de «nebula» a «dile's»
+  if (html.classList.contains("vuelta")) {
+    const p = crearPortal(["noche"]);
+    html.classList.remove("vuelta");
+    const carta = volteo && volteo.querySelector(".volteo__carta");
+    const r = volteo ? volteo.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 3, width: 0, height: 0 };
+    const x = r.left + r.width / 2, y = r.top + r.height / 2, R = radioHasta(x, y);
+    if (html.classList.contains("anima")) {
+      p.firstChild.animate([{ clipPath: `circle(${R}px at ${x}px ${y}px)` }, { clipPath: `circle(0px at ${x}px ${y}px)` }],
+        { duration: 700, delay: 80, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }).finished.then(() => p.remove());
+      setTimeout(() => p.remove(), 2500);
+      if (carta) carta.animate([{ transform: "rotateY(180deg) scale(1.2)" }, { transform: "rotateY(-12deg)", offset: 0.75 }, { transform: "none" }],
+        { duration: 1100, delay: 200, easing: "cubic-bezier(0.34, 1.3, 0.64, 1)", fill: "backwards" });
+    } else p.remove();
   }
 })();
