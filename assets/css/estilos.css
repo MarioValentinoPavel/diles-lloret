@@ -638,3 +638,192 @@ p { text-wrap: pretty; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }
+
+/* ---------- Nebula: la misma estación, de noche y en verde ----------
+   La fiesta de Fogueo en Dile’s. Dentro de la sección el amarillo pasa a lima (el verde de su cartel) y el resto
+   del lenguaje se queda: contorno tinta, borde crema, Paytone One y Gabarito. Ruptura deliberada y única:
+   el haz del platillo es lo único translúcido de la web, porque es luz. */
+@property --dilu-pelo { syntax: "<color>"; inherits: true; initial-value: #ffe11f; }
+:root {
+  --nebula: #c8f31d;
+  --nebula-claro: #ddff6a;
+  --nebula-noche: #0a100b;
+  --nebula-noche-2: #121b13;
+  --nebula-hilo: rgba(200, 243, 29, 0.3);
+  --nebula-texto-2: #b8c4ab;
+}
+
+/* el enlace del menú y el aviso de la portada llevan el punto lima */
+.nav-nebula::before { content: ""; width: 9px; height: 9px; margin-right: 0.5em; border-radius: 50%; background: var(--nebula); flex: none; }
+.menu-movil__nav .nav-nebula { display: flex; align-items: center; color: var(--nebula); }
+.menu-movil__nav .nav-nebula::before { width: 14px; height: 14px; margin-right: 0.4em; }
+@media (hover: hover) and (pointer: fine) { .cabecera__nav .nav-nebula:hover { color: var(--nebula); } }
+.aviso-nebula {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 18px 6px 12px;
+  border-radius: 999px; background: var(--nebula-noche-2); border: 2px solid var(--nebula); color: var(--crema);
+  font: 600 var(--t-peq)/1.25 var(--f-texto); text-decoration: none; text-align: left;
+  transition: background-color 180ms ease, color 180ms ease, transform 160ms var(--ease-out);
+}
+.aviso-nebula[hidden] { display: none; }
+/* en la portada va en la misma fila que el estado de apertura: no añade altura al primer pantallazo */
+.portada__estados {
+  position: relative; z-index: 5; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 12px;
+  width: max-content; max-width: calc(100vw - 2 * var(--margen)); margin: clamp(14px, 2.6svh, 24px) 0 0 50%; transform: translateX(-50%);
+}
+.portada__estados .portada__estado { margin: 0; }
+.portada__estados .aviso-nebula { min-height: 40px; }
+.anima .aviso-nebula { animation: aparecer 420ms ease 1420ms both; }
+.aviso-nebula strong { color: var(--nebula); font-weight: 800; transition: color 180ms ease; }
+.aviso-nebula .icono { width: 26px; height: 26px; color: var(--nebula); transition: color 180ms ease; }
+.aviso-nebula:active { transform: scale(0.97); }
+.aviso-nebula:focus-visible { outline-color: var(--nebula); }
+@media (hover: hover) and (pointer: fine) {
+  .aviso-nebula:hover { background: var(--nebula); color: var(--tinta); }
+  .aviso-nebula:hover strong, .aviso-nebula:hover .icono { color: var(--tinta); }
+}
+
+.nebula { position: relative; isolation: isolate; overflow: clip; background: var(--nebula-noche); color: var(--texto); --foco: var(--nebula); accent-color: var(--nebula); }
+.nebula ::selection { background: var(--nebula); color: var(--tinta); }
+.cuadros--nebula { background: conic-gradient(var(--tinta) 25%, var(--nebula) 0 50%, var(--tinta) 0 75%, var(--nebula) 0) 0 0 / 18px 18px; }
+.nebula__caja { padding-block: clamp(48px, 6vw, 88px) var(--seccion); }
+.nebula__cielo { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.nebula__estrella { position: absolute; width: 40px; }
+.nebula__estrella.estrella--grande { width: 56px; }
+.nebula__estrella.estrella--peq { width: 24px; }
+.nebula__estrella .estrella__pelo { fill: var(--nebula); }
+.nebula__estrella--1 { left: 9%; top: 9%; transform: rotate(-12deg); }
+.nebula__estrella--2 { right: 9%; top: 15%; transform: rotate(12deg); }
+.nebula__estrella--3 { left: 17%; top: 27%; }
+.nebula__estrella--4 { right: 18%; top: 5%; transform: rotate(-6deg); }
+
+.nebula__cabeza { display: grid; justify-items: center; text-align: center; }
+.nebula__emblema { position: relative; width: clamp(200px, 20vw, 280px); aspect-ratio: 320 / 300; }
+.platillo { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.platillo__luz { fill: var(--nebula); opacity: 0.16; }
+.platillo__ondas ellipse { fill: none; stroke: var(--nebula); stroke-width: 3; opacity: 0.5; }
+.platillo__borde > * { fill: var(--crema); stroke: var(--crema); stroke-width: 15; stroke-linejoin: round; }
+.platillo__pieza { stroke: var(--tinta); stroke-width: 8; stroke-linejoin: round; }
+.platillo__antena { fill: var(--tinta); }
+.platillo__bola, .platillo__casco { fill: var(--nebula); }
+.platillo__cupula { fill: var(--nebula-claro); }
+.platillo__brillo { fill: none; stroke: var(--crema); stroke-width: 7; stroke-linecap: round; }
+.platillo__franja { fill: none; stroke: var(--tinta); stroke-width: 6; stroke-linecap: round; }
+.platillo__luces circle { fill: var(--tinta); }
+.nebula__dilu { position: absolute; left: 32%; bottom: 14%; width: 34%; --dilu-pelo: var(--nebula); }
+.nebula__dilu .dilu { width: 100%; height: auto; transform: rotate(8deg); }
+
+.nebula__titulo { margin-top: clamp(6px, 1vw, 12px); display: grid; justify-items: center; gap: clamp(10px, 1.4vw, 16px); }
+.nebula__marca {
+  position: relative; z-index: 0; padding-inline: 0.06em;
+  font: 400 clamp(3.6rem, 2rem + 6.4vw, 6rem)/1 var(--f-titulo); letter-spacing: -0.005em; text-transform: lowercase; color: var(--nebula);
+}
+/* contorno tejido: tinta y, por fuera, el borde crema (copias decorativas, mudas para lectores de pantalla) */
+.nebula__marca::before, .nebula__marca::after {
+  content: attr(data-texto); content: attr(data-texto) / "";
+  position: absolute; inset: 0; padding-inline: inherit; pointer-events: none;
+}
+.nebula__marca::before { z-index: -1; color: var(--tinta); -webkit-text-stroke: 0.15em var(--tinta); }
+.nebula__marca::after { z-index: -2; color: var(--crema); -webkit-text-stroke: 0.27em var(--crema); }
+.nebula__sub { font: 400 clamp(1.4rem, 1.05rem + 1.1vw, 2.05rem)/1.12 var(--f-titulo); color: var(--crema); max-width: 22ch; }
+.nebula__lead { margin-top: 16px; max-width: 54ch; font-size: var(--t-entrada); color: var(--texto); }
+.nebula__estado { margin-top: 22px; border-color: var(--nebula); }
+.nebula__estado::before { background: var(--nebula); }
+.nebula[data-fase="pasado"] .nebula__estado::before { background: var(--texto-2); }
+
+.nebula__datos {
+  margin: clamp(36px, 5vw, 56px) auto 0; max-width: 980px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 2px solid var(--nebula-hilo); border-radius: var(--r);
+}
+.nebula__dato { display: grid; align-content: start; justify-items: center; gap: 8px; padding: 20px 18px; text-align: center; }
+.nebula__dato + .nebula__dato { border-left: 2px solid var(--nebula-hilo); }
+.nebula__dato dt { display: inline-flex; align-items: center; gap: 0.45em; font: 800 0.82rem/1 var(--f-texto); letter-spacing: 0.14em; text-transform: uppercase; color: var(--nebula-texto-2); }
+.nebula__dato dt .icono { width: 1.35em; height: 1.35em; color: var(--nebula); }
+.nebula__dato dd { margin: 0; font: 400 var(--t-sub)/1.2 var(--f-titulo); color: var(--crema); }
+
+.nebula__rejilla {
+  margin-top: clamp(24px, 3vw, 40px);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px) minmax(0, 1fr);
+  gap: clamp(20px, 2.6vw, 36px); align-items: stretch;
+}
+.nebula__panel {
+  display: flex; flex-direction: column; padding: clamp(22px, 2.4vw, 32px);
+  background: var(--nebula-noche-2); border: 2px solid var(--nebula-hilo); border-radius: var(--r);
+}
+.nebula__h3 { font: 400 clamp(1.5rem, 1.2rem + 0.8vw, 1.9rem)/1.1 var(--f-titulo); color: var(--nebula); }
+.nebula__lista { margin-top: 12px; }
+.nebula__lista li { display: flex; align-items: center; gap: 14px; padding: 13px 0; font-weight: 600; border-bottom: 1px solid rgba(244, 237, 220, 0.1); }
+.nebula__lista li:last-child { border-bottom: 0; }
+.nebula__lista .icono { width: 26px; height: 26px; color: var(--nebula); }
+
+.nebula__cartel {
+  display: block; align-self: center; border-radius: var(--r-foto); overflow: hidden;
+  border: var(--borde) solid var(--tinta); box-shadow: 0 0 0 var(--aro) var(--crema); background: var(--tinta);
+  transition: transform 320ms var(--ease-out);
+}
+.nebula__cartel img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; transition: transform 700ms var(--ease-out); }
+.nebula__cartel:focus-visible { outline-color: var(--nebula); outline-offset: 7px; }
+@media (hover: hover) and (pointer: fine) {
+  .nebula__cartel:hover { transform: translateY(-4px); }
+  .nebula__cartel:hover img { transform: scale(1.03); }
+}
+
+.entradas { margin-top: 8px; }
+.entrada { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; padding: 16px 0; border-bottom: 2px dashed rgba(244, 237, 220, 0.2); }
+.entrada__nombre { font: 400 var(--t-plato)/1.05 var(--f-titulo); color: var(--crema); }
+.entrada__desc { margin-top: 6px; color: var(--nebula-texto-2); font-size: var(--t-peq); line-height: 1.45; }
+.entrada__precio { font: 400 var(--t-precio)/1 var(--f-titulo); color: var(--nebula); white-space: nowrap; padding-top: 2px; }
+.nebula__botones { margin-top: auto; padding-top: 24px; display: grid; justify-items: start; gap: 6px; }
+.boton--nebula { width: 100%; background: var(--nebula); }
+.boton--nebula[hidden] { display: none; }
+.boton--nebula .icono { width: 1.4em; height: 1.4em; }
+@media (hover: hover) and (pointer: fine) { .boton--nebula:hover { background: var(--nebula-claro); } }
+.enlace--nebula { text-decoration-color: var(--nebula); }
+.enlace--nebula .icono { color: var(--nebula); }
+@media (hover: hover) and (pointer: fine) { .enlace--nebula:hover { color: var(--nebula); } }
+.nebula__nota { margin-top: 10px; font-size: var(--t-nota); color: var(--nebula-texto-2); }
+
+@media (max-width: 1100px) {
+  .nebula__rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nebula__cartel { grid-column: 1 / -1; order: -1; justify-self: center; width: min(400px, 100%); }
+  .nebula__dato { padding: 18px 10px; }
+  .nebula__dato dd { font-size: 1.12rem; }
+}
+@media (max-width: 680px) {
+  .nebula__rejilla { grid-template-columns: minmax(0, 1fr); }
+  .nebula__panel--entradas { order: 0; }
+  .nebula__panel--programa { order: 1; }
+  .nebula__datos { grid-template-columns: minmax(0, 1fr); }
+  .nebula__dato + .nebula__dato { border-left: 0; border-top: 2px solid var(--nebula-hilo); }
+  .nebula__dato { padding: 16px; }
+  .nebula__estrella--3, .nebula__estrella--4 { display: none; }
+  .nebula__estrella--1 { left: 4%; top: 6%; }
+  .nebula__estrella--2 { right: 5%; top: 11%; }
+}
+
+/* Momento de autor: el platillo baja, abre el haz y abduce a Dilu, que pasa de amarillo a lima.
+   Después, el platillo se mece y las ondas del haz bajan; todo se para cuando la sección sale de pantalla. */
+.anima .platillo__nave { transition: opacity 500ms ease, transform 900ms var(--ease-out); }
+.anima .platillo__haz { transform-box: fill-box; transform-origin: 50% 0; transition: transform 700ms var(--ease-out) 500ms, opacity 300ms ease 500ms; }
+.anima .nebula__dilu { transition: transform 1500ms var(--ease-out) 750ms, opacity 400ms ease 750ms, --dilu-pelo 900ms ease 1500ms; }
+.anima .nebula__emblema:not(.visto) .platillo__nave { opacity: 0; transform: translateY(-36px); }
+.anima .nebula__emblema:not(.visto) .platillo__haz { opacity: 0; transform: scaleY(0); }
+.anima .nebula__emblema:not(.visto) .nebula__dilu { opacity: 0; transform: translateY(70%) scale(0.86); --dilu-pelo: var(--amarillo); }
+.anima .nebula__emblema.visto .platillo { animation: vaiven 5.2s var(--ease-in-out) 2.4s infinite; }
+.anima .nebula__emblema.visto .nebula__dilu .dilu { animation: abducir 6s var(--ease-in-out) 2.6s infinite; }
+.anima .nebula__emblema.visto .platillo__ondas ellipse { transform-box: fill-box; transform-origin: 50% 50%; animation: onda 2.7s linear infinite; }
+.anima .nebula__emblema.visto .platillo__ondas ellipse:nth-child(2) { animation-delay: 0.9s; }
+.anima .nebula__emblema.visto .platillo__ondas ellipse:nth-child(3) { animation-delay: 1.8s; }
+.anima .nebula__emblema.visto .platillo__luces circle { animation: luz 1.8s steps(1, end) infinite; }
+.anima .nebula__emblema.visto .platillo__luces circle:nth-child(even) { animation-delay: 0.9s; }
+.anima .nebula__emblema:not(.en-pantalla) .platillo,
+.anima .nebula__emblema:not(.en-pantalla) .platillo *,
+.anima .nebula__emblema:not(.en-pantalla) .dilu { animation-play-state: paused; }
+@keyframes vaiven { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+@keyframes abducir { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -10px; rotate: -6deg; } }
+@keyframes onda { 0% { opacity: 0; transform: translateY(-34px) scale(0.72); } 25% { opacity: 0.55; } 100% { opacity: 0; transform: translateY(14px) scale(1.04); } }
+@keyframes luz { 0% { fill: var(--tinta); } 50% { fill: var(--nebula-claro); } }
+
+/* en marcha: el punto del estado late */
+.anima .nebula[data-fase="ahora"] .nebula__estado::before { animation: latido 1.6s var(--ease-out) infinite; }
+@keyframes latido { 0% { box-shadow: 0 0 0 0 rgba(200, 243, 29, 0.7); } 100% { box-shadow: 0 0 0 10px rgba(200, 243, 29, 0); } }

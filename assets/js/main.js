@@ -236,4 +236,48 @@
     }, { rootMargin: "0px 0px -12% 0px", threshold: 0.12 });
     d.querySelectorAll(".revela, .revela-foto, .titulo-revela, .observa").forEach(el => io.observe(el));
   }
+
+  /* ---------- Nebula: estado de la fiesta según la fecha (hora de Lloret) ----------
+     Antes: cuenta los días. El día: «es hoy». Durante: «ahora mismo». Después: se quitan el aviso de la portada,
+     el botón de entradas y las preguntas de esta edición, y se manda a su Instagram.
+     ?nebula=2026-12-04T23:30 permite revisar cualquier momento (hora de Madrid). */
+  const nebula = d.querySelector("[data-nebula]");
+  if (nebula) {
+    const N = {
+      dia: "2026-12-04",
+      inicio: Date.parse("2026-12-04T23:00:00+01:00"),
+      finLista: Date.parse("2026-12-05T00:30:00+01:00"),
+      fin: Date.parse("2026-12-05T03:00:00+01:00"),
+    };
+    const estadoN = nebula.querySelector("[data-nebula-estado]");
+    const fechaMadrid = t => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit" }).format(t);
+    const diasEntre = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 864e5);
+    const pintarNebula = () => {
+      const prueba = params.get("nebula");
+      const t = prueba ? Date.parse(`${prueba}:00+01:00`) : Date.now();
+      if (Number.isNaN(t)) return;
+      const faltan = diasEntre(fechaMadrid(t), N.dia);
+      let fase, texto;
+      if (t >= N.fin) { fase = "pasado"; texto = "Nebula Vol. 1 ya pasó. Las próximas fechas, en @nebula.theroom"; }
+      else if (t >= N.inicio) { fase = "ahora"; texto = t < N.finLista ? "Ahora mismo en Dile’s, hasta las 03:00. Lista gratis hasta las 00:30" : "Ahora mismo en Dile’s, hasta las 03:00"; }
+      else if (faltan <= 0) { fase = "hoy"; texto = "Es hoy, a partir de las 23:00"; }
+      else if (faltan === 1) { fase = "antes"; texto = "Es mañana, viernes 4 de diciembre, a las 23:00"; }
+      else { fase = "antes"; texto = `Faltan ${faltan} días: viernes 4 de diciembre`; }
+      nebula.dataset.fase = fase;
+      if (estadoN) estadoN.textContent = texto;
+      const pasado = fase === "pasado";
+      d.querySelectorAll("[data-aviso-nebula], [data-nebula-entradas], [data-nebula-temporal]").forEach(el => { el.hidden = pasado; });
+    };
+    pintarNebula();
+    setInterval(pintarNebula, 60 * 1000);
+
+    // el platillo abduce a Dilu la primera vez que se ve; los bucles solo corren mientras está en pantalla
+    const emblema = nebula.querySelector(".nebula__emblema");
+    if (emblema && html.classList.contains("anima") && "IntersectionObserver" in window) {
+      new IntersectionObserver(([en]) => {
+        emblema.classList.toggle("en-pantalla", en.isIntersecting);
+        if (en.isIntersecting) emblema.classList.add("visto");
+      }, { rootMargin: "0px 0px -10% 0px", threshold: 0.35 }).observe(emblema);
+    }
+  }
 })();
